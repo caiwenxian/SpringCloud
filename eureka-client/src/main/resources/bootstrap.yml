@@ -1,0 +1,8 @@
+#spring:
+#  application:
+#    name: config-server #git的配置文件名称前缀
+#  cloud:
+#    config:
+#      uri: http://localhost:1002/
+#      profile: default
+#      label: master
