@@ -17,7 +17,8 @@ public class DcController {
     LoadBalancerClient loadBalancerClient;
 
     @GetMapping("/dc")
-    public String dc() {
+    public String dc() throws InterruptedException {
+//        Thread.sleep(5000);
         ServiceInstance serviceInstance = loadBalancerClient.choose("eureka-consumer");
         System.out.println(serviceInstance.toString());
         String services = "Services: " + discoveryClient.getServices();
