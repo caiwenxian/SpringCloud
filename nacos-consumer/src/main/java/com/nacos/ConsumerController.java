@@ -15,8 +15,8 @@ public class ConsumerController {
 
     @RequestMapping("/echo/{message}")
     public String echo(@PathVariable String message) {
-        restTemplate.getForObject("http://nacos-service-config/config/get", Object.class);
-        System.out.println("");
+//        restTemplate.getForObject("http://nacos-service-config/config/get", Object.class);
+//        System.out.println("");
         return restTemplate.getForObject("http://nacos-service-provider/provider/echo/" + message, String.class);
     }
 }

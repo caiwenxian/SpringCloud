@@ -1,0 +1,16 @@
+server:
+  port: 8888
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*' #暴露端点，这样actuator就可以监控的到健康状况
+
+nacos:
+  config:
+    server-addr: 192.168.0.152:8848
+    data-id: spring-cloud-gateway
+    group: DEV_GROUP
+
+

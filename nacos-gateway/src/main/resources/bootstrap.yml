@@ -1,0 +1,17 @@
+spring:
+  application:
+    name: nacos-gateway
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 192.168.0.152:8848
+    gateway:
+      discovery:
+        locator:
+          enabled: false
+      enabled: true
+#      routes:
+#        - id: 163
+#          uri: http://www.163.com/
+#          predicates:
+#            - Path=/163/**
