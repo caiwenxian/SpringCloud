@@ -1,0 +1,58 @@
+server:
+  port: 1080
+  servlet:
+    context-path: /boot
+  tomcat:
+        uri-encoding: UTF-8
+        max-threads: 30
+        max-http-header-size: 8096
+        max-connections: 2000
+
+spring:
+  # datasource 数据源配置内容
+  datasource:
+    # 基础库数据源配置
+    url: jdbc:mysql://192.168.165.129:3306/blog?setUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=UTC
+    driver-class-name: com.mysql.jdbc.Driver
+    username: root
+    password: root
+  #    type: com.alibaba.druid.pool.DruidDataSource # 设置类型为 DruidDataSource
+      # Druid 自定义配置，对应 DruidDataSource 中的 setting 方法的属性
+     # min-idle: 5 # 池中维护的最小空闲连接数，默认为 0 个。
+     # max-active: 30 # 池中最大连接数，包括闲置和使用中的连接，默认为 8 个。
+  application:
+    name: boot
+#  profiles:
+#    active: dev
+  #date参数转化
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+  mvc:
+    date-format: yyyy-MM-dd HH:mm:ss
+# 最大支持文件大小
+# 最大支持请求大小
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 100MB
+
+mybatis:
+  mapper-locations: classpath*:mapper/*.xml
+  configuration:
+    map-underscore-to-camel-case: true
+    jdbc-type-for-null: 'null'
+
+
+
+
+#显示SQL
+logging:
+  level:
+    com:
+      minstone: debug
+  config: classpath:logback.xml
+
+
+
+
