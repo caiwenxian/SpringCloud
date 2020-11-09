@@ -6,3 +6,11 @@
 #      uri: http://localhost:1002/
 #      profile: default
 #      label: master
+
+
+spring:
+  zipkin:
+    base-url: http://localhost:9000
+  sleuth:
+    sampler:
+      percentage: 1.0

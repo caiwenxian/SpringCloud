@@ -1,0 +1,24 @@
+
+server:
+  port: 8888
+spring:
+  application:
+    name: eureka-gateway
+  cloud:
+    gateway:
+#      routes:
+#      - id: neo_route
+#        uri: http://www.ityouknow.com
+#        predicates:
+#        - Path=/spring-cloud
+      discovery:
+        locator:
+          enabled: true
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:1001/eureka/
+logging:
+  level:
+    org.springframework.cloud.gateway: debug

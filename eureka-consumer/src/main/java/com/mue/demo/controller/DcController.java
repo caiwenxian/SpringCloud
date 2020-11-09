@@ -1,5 +1,6 @@
 package com.mue.demo.controller;
 
+import com.mue.demo.service.DcService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
@@ -17,6 +18,8 @@ public class DcController {
     RestTemplate restTemplate;
     @Autowired
     DiscoveryClient discoveryClient;
+    @Autowired
+    DcService dcService;
 
     @GetMapping("/consumer")
     public String dc() {
@@ -31,5 +34,10 @@ public class DcController {
         String services = "Services2: " + discoveryClient.getServices();
         System.out.println(services);
         return services;
+    }
+
+    @GetMapping("/hello")
+    public String hello() {
+        return "consumer: " + dcService.hello();
     }
 }

@@ -26,4 +26,9 @@ public class DcController {
         return services;
     }
 
+    @GetMapping("/hello")
+    public String hello() {
+        return "hello these is eureka-client";
+    }
+
 }

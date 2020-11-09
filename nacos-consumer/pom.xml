@@ -9,9 +9,9 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com</groupId>
-    <artifactId>nacos</artifactId>
+    <artifactId>nacos-consumer</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>nacos</name>
+    <name>nacos-consumer</name>
     <description>Demo project for Spring Boot</description>
 
     <properties>

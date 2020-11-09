@@ -3,9 +3,13 @@ spring:
     name: config-server #git的配置文件名称前缀
   cloud:
     config:
-      uri: http://localhost:1002/
-      profile: default
+      uri: http://localhost:3001/
+      profile: dev
       label: master
 
 server:
-  port: 1003
+  port: 4001
+
+management:
+  security:
+    enabled: false
