@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="generate.TSongDao">
+  <resultMap id="BaseResultMap" type="generate.TSong">
+    <id column="id" jdbcType="VARCHAR" property="id" />
+    <result column="songId" jdbcType="VARCHAR" property="songid" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="artistId" jdbcType="VARCHAR" property="artistid" />
+    <result column="lyricId" jdbcType="VARCHAR" property="lyricid" />
+    <result column="mp3Url" jdbcType="VARCHAR" property="mp3url" />
+    <result column="origin" jdbcType="VARCHAR" property="origin" />
+    <result column="num" jdbcType="INTEGER" property="num" />
+    <result column="createTime" jdbcType="TIMESTAMP" property="createtime" />
+    <result column="modifyTime" jdbcType="TIMESTAMP" property="modifytime" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, songId, `name`, artistId, lyricId, mp3Url, origin, num, createTime, modifyTime
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_song
+    where id = #{id,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from t_song
+    where id = #{id,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="generate.TSong" useGeneratedKeys="true">
+    insert into t_song (songId, `name`, artistId, 
+      lyricId, mp3Url, origin, 
+      num, createTime, modifyTime
+      )
+    values (#{songid,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, #{artistid,jdbcType=VARCHAR}, 
+      #{lyricid,jdbcType=VARCHAR}, #{mp3url,jdbcType=VARCHAR}, #{origin,jdbcType=VARCHAR}, 
+      #{num,jdbcType=INTEGER}, #{createtime,jdbcType=TIMESTAMP}, #{modifytime,jdbcType=TIMESTAMP}
+      )
+  </insert>
+  <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="generate.TSong" useGeneratedKeys="true">
+    insert into t_song
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="songid != null">
+        songId,
+      </if>
+      <if test="name != null">
+        `name`,
+      </if>
+      <if test="artistid != null">
+        artistId,
+      </if>
+      <if test="lyricid != null">
+        lyricId,
+      </if>
+      <if test="mp3url != null">
+        mp3Url,
+      </if>
+      <if test="origin != null">
+        origin,
+      </if>
+      <if test="num != null">
+        num,
+      </if>
+      <if test="createtime != null">
+        createTime,
+      </if>
+      <if test="modifytime != null">
+        modifyTime,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="songid != null">
+        #{songid,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null">
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="artistid != null">
+        #{artistid,jdbcType=VARCHAR},
+      </if>
+      <if test="lyricid != null">
+        #{lyricid,jdbcType=VARCHAR},
+      </if>
+      <if test="mp3url != null">
+        #{mp3url,jdbcType=VARCHAR},
+      </if>
+      <if test="origin != null">
+        #{origin,jdbcType=VARCHAR},
+      </if>
+      <if test="num != null">
+        #{num,jdbcType=INTEGER},
+      </if>
+      <if test="createtime != null">
+        #{createtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="modifytime != null">
+        #{modifytime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="generate.TSong">
+    update t_song
+    <set>
+      <if test="songid != null">
+        songId = #{songid,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null">
+        `name` = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="artistid != null">
+        artistId = #{artistid,jdbcType=VARCHAR},
+      </if>
+      <if test="lyricid != null">
+        lyricId = #{lyricid,jdbcType=VARCHAR},
+      </if>
+      <if test="mp3url != null">
+        mp3Url = #{mp3url,jdbcType=VARCHAR},
+      </if>
+      <if test="origin != null">
+        origin = #{origin,jdbcType=VARCHAR},
+      </if>
+      <if test="num != null">
+        num = #{num,jdbcType=INTEGER},
+      </if>
+      <if test="createtime != null">
+        createTime = #{createtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="modifytime != null">
+        modifyTime = #{modifytime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="generate.TSong">
+    update t_song
+    set songId = #{songid,jdbcType=VARCHAR},
+      `name` = #{name,jdbcType=VARCHAR},
+      artistId = #{artistid,jdbcType=VARCHAR},
+      lyricId = #{lyricid,jdbcType=VARCHAR},
+      mp3Url = #{mp3url,jdbcType=VARCHAR},
+      origin = #{origin,jdbcType=VARCHAR},
+      num = #{num,jdbcType=INTEGER},
+      createTime = #{createtime,jdbcType=TIMESTAMP},
+      modifyTime = #{modifytime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+</mapper>

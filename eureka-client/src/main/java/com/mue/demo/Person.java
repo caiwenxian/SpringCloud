@@ -1,9 +1,6 @@
 package com.mue.demo;
 
 import org.springframework.beans.factory.BeanNameAware;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 public class Person implements BeanNameAware {
@@ -56,7 +53,7 @@ public class Person implements BeanNameAware {
 
 
     public static void main(String[] str) {
-        ClassPathXmlApplicationContext classPathXmlApplicationContext = new ClassPathXmlApplicationContext("application.xml");
+        ClassPathXmlApplicationContext classPathXmlApplicationContext = new ClassPathXmlApplicationContext("application.xml2");
         Person person = (Person)classPathXmlApplicationContext.getBean("person");
         person.speak();
         classPathXmlApplicationContext.close();
