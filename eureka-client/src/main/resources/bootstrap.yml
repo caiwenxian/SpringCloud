@@ -14,3 +14,9 @@
 #  sleuth:
 #    sampler:
 #      percentage: 1.0
+
+#spring:
+#  cloud:
+#    sentinel:
+#      transport:
+#        dashboard: 192.168.115.128:8888

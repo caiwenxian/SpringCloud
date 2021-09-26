@@ -1,0 +1,56 @@
+spring:
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    url: jdbc:mysql://192.168.115.128:3306/blog?useUnicode=true&characterEncoding=utf-8
+    username: root
+    password: root
+    driverClassName: com.mysql.jdbc.Driver
+    initialSize: 10
+    minIdle: 10
+    maxIdle: 100
+    maxActive: 2000
+    maxWait: 60000
+    timeBetweenEvictionRunsMillis: 60000
+    minEvictableIdleTimeMillis: 300000
+    validationQuery: SELECT 1 FROM DUAL
+    testWhileIdle: true
+    testOnBorrow: false
+    testOnReturn: false
+    poolPreparedStatements: true
+    maxPoolPreparedStatementPerConnectionSize: 20
+    filters: stat,wall,log4j
+    connectionProperties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000
+server:
+  port: 8001
+  tomcat:
+    basedir: /home/blog/tomcattmp
+
+netty:
+  server:
+    port: 9090    #netty 启动端口
+    workerGroup: 20 #工作线程
+    businessGroup: 100 #业务线程数
+    receiveBuffer: 262144 #消息接收缓存
+    sendOutBuffer: 262144 #消息发送缓存
+    connectQueue: 128  #连接队列
+    readOutOfTime: 60000 #读取消息超时时间
+    writeOutOfTime: 60000 #写入消息超时时间
+    nettyLogLevel: debug #日志模式
+    readWriteIdle: 120 #心跳超时时间(2分钟)
+
+  tomcat:
+    basedir: /home/blog/tomcattmp
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://127.0.0.1:8888/eureka/    # 指定注册中心的地址
+  instance:
+    preferIpAddress: true
+hystrix.command.default.execution.isolation.thread.timeoutInMilliseconds: 20000
+hystrix.threadpool.default.coreSize: 500
+ribbon:
+  ConnectTimeout: 10000
+  ReadTimeout: 20000
+  MaxAutoRetriesNextServer: 1
+  OkToRetryOnAllOperations: true
+

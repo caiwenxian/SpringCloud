@@ -1,5 +1,6 @@
 package com.mue.demo.controller.sharding;
 
+import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.mue.demo.model.sharding.Song;
 import com.mue.demo.service.sharding.ISongService;
 import lombok.extern.slf4j.Slf4j;

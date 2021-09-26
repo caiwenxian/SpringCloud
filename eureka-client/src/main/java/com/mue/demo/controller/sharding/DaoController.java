@@ -1,5 +1,6 @@
 package com.mue.demo.controller.sharding;
 
+import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.mue.demo.model.sharding.OrderEntity;
 import com.mue.demo.service.sharding.IOrderService;
 import lombok.extern.slf4j.Slf4j;
@@ -41,6 +42,7 @@ public class DaoController {
     }
 
     @GetMapping("/listByOrderId")
+    @SentinelResource("order.listByOrderId")
     public List<OrderEntity> listByOrderId(Long orderId) {
         return orderService.listByOrderId(orderId);
     }

@@ -1,0 +1,12 @@
+spring:
+  application:
+    name: blog-eureka
+  cloud:
+    config:
+      uri: http://127.0.0.1:9000
+  profiles:
+    active: dev
+endpoints:
+  shutdown:
+    enabled: true
+    sensitive: false

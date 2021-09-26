@@ -1,0 +1,15 @@
+server:
+  port: 9000
+spring:
+  application:
+    name: 'config'
+  profiles:
+    active: native
+  cloud:
+    config:
+      server:
+        native:
+          search-locations: classpath:/config
+
+logging:
+  config: classpath:logback.xml

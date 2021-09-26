@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true">
+
+    <!-- 日志级别 -->
+    <property name="log.root.level" value="debug" />
+    <property name="log.type" value="${log.type:-file}" />
+    <!-- 模块名称， 影响日志配置名，日志文件名 -->
+    <property name="log.moduleName" value="blog-eureka" />
+    <!--日志文件的保存路径,首先查找系统属性-Dlog.dir,${log.dir:-logs}如果存在就使用其；否则，在当前目录下创建名为logs目录做日志存放的目录 -->
+    <!--<property name="log.base" value="${log.dir:-/home/sesame/logs}/${log.moduleName}" />-->
+<!--    <property name="log.base" value="${log.dir:-/usr/local/program/lite/logs}/${log.moduleName}" />-->
+    <property name="log.base" value="${log.dir:-D:/logs}/${log.moduleName}" />
+    <property name="log.max.size" value="100MB" /> <!-- 日志文件大小,超过这个大小将被压缩 -->
+
+    <!--控制台输出 -->
+    <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <Pattern>%date{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36}:%L %msg%n</Pattern>
+        </encoder>
+    </appender>
+
+    <!-- 用来保存输出所有级别的日志 -->
+    <appender name="file" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <File>${log.base}/${log.moduleName}.log</File><!-- 设置日志不超过${log.max.size}时的保存路径，注意如果是web项目会保存到Tomcat的bin目录 下 -->
+        <!-- 滚动记录文件，先将日志记录到指定文件，当符合某个条件时，将日志记录到其他文件。 -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <FileNamePattern>${log.base}/archive/${log.moduleName}.%d{yyyy-MM-dd}.%i.log.zip
+            </FileNamePattern>
+            <!-- 文件输出日志 (文件大小策略进行文件输出，超过指定大小对文件备份) -->
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>${log.max.size}</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+        </rollingPolicy>
+        <!-- 日志输出的文件的格式 -->
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <pattern>%date{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36}:%L %msg %X{randomTime} %n</pattern>
+        </layout>
+    </appender>
+
+    <!-- 只用保存输出error级别的日志 -->
+    <appender name="file.error" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <File>${log.base}/${log.moduleName}_err.log</File>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <FileNamePattern>${log.base}/archive/${log.moduleName}.err.%d{yyyy-MM-dd}.%i.log.zip
+            </FileNamePattern>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>${log.max.size}</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+        </rollingPolicy>
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <pattern>%date{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36}:%L %msg%n</pattern>
+        </layout>
+        <!-- 下面为配置只输出error级别的日志 -->
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>ERROR</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+    </appender>
+
+    <logger name="org.mybatis" level="${log.root.level}"/>
+    <logger name="com.sesame.acg" level="${log.root.level}"/>
+    <logger name="org.springframework" level="error"/>
+    <root level="info">
+        <appender-ref ref="${log.type}" />
+        <appender-ref ref="file.error" />
+    </root>
+</configuration>
