@@ -1,0 +1,29 @@
+
+server:
+  port: 7777
+spring:
+  application:
+    name: eureka-gateway
+  cloud:
+    gateway:
+      routes:
+      - id: blog-mian-service
+        uri: http://127.0.0.1:8001/
+        predicates:
+        - Path=/song/**
+      - id: baidu
+        uri: http://top.baidu.com
+        predicates:
+        - Path=/board/**
+      discovery:
+        locator:
+          enabled: true
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://127.0.0.1:8888/eureka/
+logging:
+  level:
+    org.springframework.cloud.gateway: debug
+  config: classpath:logback.xml

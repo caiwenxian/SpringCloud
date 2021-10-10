@@ -13,3 +13,7 @@ spring:
 
 logging:
   config: classpath:logback.xml
+
+management:
+  security:
+    enabled: false

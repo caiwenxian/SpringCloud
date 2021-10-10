@@ -1,0 +1,26 @@
+spring:
+  application:
+    name: blog-quartz-service
+  cloud:
+    config:
+      uri: http://127.0.0.1:9000
+    loadbalancer:
+      retry:
+        enabled: true
+  profiles:
+    active: dev
+  http:
+    multipart:
+      max-file-size: 25MB
+      max-request-size: 100MB
+logging:
+  config: classpath:logback.xml
+spring.sleuth.feign.enabled: false
+management.security.enabled: false
+endpoints:
+  shutdown:
+    enabled: true
+    sensitive: false
+cache:
+  session:
+    timeout: 30

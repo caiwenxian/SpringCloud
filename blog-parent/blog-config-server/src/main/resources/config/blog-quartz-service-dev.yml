@@ -21,26 +21,10 @@ spring:
     filters: stat,wall,log4j
     connectionProperties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000
 server:
-  port: 8001
+  port: 8002
   tomcat:
     basedir: /home/blog/tomcattmp
 
-
-netty:
-  server:
-    port: 9090    #netty 启动端口
-    workerGroup: 20 #工作线程
-    businessGroup: 100 #业务线程数
-    receiveBuffer: 262144 #消息接收缓存
-    sendOutBuffer: 262144 #消息发送缓存
-    connectQueue: 128  #连接队列
-    readOutOfTime: 60000 #读取消息超时时间
-    writeOutOfTime: 60000 #写入消息超时时间
-    nettyLogLevel: debug #日志模式
-    readWriteIdle: 120 #心跳超时时间(2分钟)
-
-  tomcat:
-    basedir: /home/blog/tomcattmp
 eureka:
   client:
     serviceUrl:
@@ -54,4 +38,22 @@ ribbon:
   ReadTimeout: 20000
   MaxAutoRetriesNextServer: 1
   OkToRetryOnAllOperations: true
+
+xxl:
+  job:
+    admin:
+      addresses: http://127.0.0.1:8080/xxl-job-admin
+    executor:
+      appname: executorDemo
+      ip:
+      port: 20001
+      logpath: D:/logs/xxl-job/jobhandler
+      logretentiondays: -1
+    accessToken:
+
+test: 2
+
+
+
+
 

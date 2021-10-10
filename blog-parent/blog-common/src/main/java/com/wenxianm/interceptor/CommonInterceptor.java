@@ -2,7 +2,7 @@ package com.wenxianm.interceptor;
 
 import com.wenxianm.utils.MdcUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.log4j.MDC;
+import org.slf4j.MDC;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 

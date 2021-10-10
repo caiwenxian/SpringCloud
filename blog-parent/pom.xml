@@ -12,14 +12,14 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>1.5.4.RELEASE</version>
+        <version>2.0.6.RELEASE</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
-        <spring-cloud.version>Dalston.SR1</spring-cloud.version>
+        <spring-cloud.version>Finchley.SR2</spring-cloud.version>
         <blog-main-api-version>1.0-SNAPSHOT</blog-main-api-version>
         <blog-common-version>1.0-SNAPSHOT</blog-common-version>
     </properties>
@@ -30,6 +30,8 @@
         <module>blog-common</module>
         <module>blog-main-api</module>
         <module>blog-main-service</module>
+        <module>blog-quartz-service</module>
+        <module>blog-gateway</module>
     </modules>
 
     <dependencies>
@@ -67,6 +69,12 @@
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
             <version>1.2.3</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>22.0</version>
         </dependency>
 
     </dependencies>
