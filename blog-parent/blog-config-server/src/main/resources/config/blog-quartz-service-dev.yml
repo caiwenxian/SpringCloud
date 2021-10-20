@@ -29,6 +29,7 @@ eureka:
   client:
     serviceUrl:
       defaultZone: http://127.0.0.1:8888/eureka/    # 指定注册中心的地址
+    fetch-registry: true
   instance:
     preferIpAddress: true
 hystrix.command.default.execution.isolation.thread.timeoutInMilliseconds: 20000
@@ -42,9 +43,9 @@ ribbon:
 xxl:
   job:
     admin:
-      addresses: http://127.0.0.1:8080/xxl-job-admin
+      addresses: http://192.168.115.128:8123/xxl-job-admin
     executor:
-      appname: executorDemo
+      appname: executorSong
       ip:
       port: 20001
       logpath: D:/logs/xxl-job/jobhandler

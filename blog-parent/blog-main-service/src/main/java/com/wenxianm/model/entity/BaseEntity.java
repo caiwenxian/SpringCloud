@@ -4,7 +4,7 @@ import lombok.Data;
 
 import javax.persistence.Column;
 import java.io.Serializable;
-import java.time.LocalDateTime;
+import java.util.Date;
 
 /**
  * @ClassName BaseEntity
@@ -16,9 +16,7 @@ public class BaseEntity implements Serializable {
 
     private String id;
 
-    @Column(name = "createTime")
-    private LocalDateTime createTime;
+    private Date createTime;
 
-    @Column(name = "modifyTime")
-    private LocalDateTime modifyTime;
+    private Date modifyTime;
 }

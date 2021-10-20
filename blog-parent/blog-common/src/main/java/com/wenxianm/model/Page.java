@@ -1,5 +1,7 @@
 package com.wenxianm.model;
 
+import lombok.Data;
+
 import java.io.Serializable;
 
 /**
@@ -7,6 +9,7 @@ import java.io.Serializable;
  * @Author cwx
  * @Date 2021/9/24 18:11
  **/
+@Data
 public class Page implements Serializable {
 
     private static final long serialVersionUID = 1489126601690028478L;
@@ -14,14 +17,22 @@ public class Page implements Serializable {
     /**
      * 页码
      */
-    private int pageIndex;
+    private int pageIndex = 1;
     /**
      * 页大小
      */
-    private int pageSize;
+    private int pageSize = 10;
     /**
      * 总记录数
      */
-    private int totalItem;
+    private int totalItem = 0;
+
+    public int getOffset() {
+        return (this.pageIndex - 1) * pageSize;
+    }
+
+    public int getLimit() {
+        return this.pageSize;
+    }
 
 }

@@ -9,9 +9,15 @@ import lombok.Data;
  * @Date 2021/9/24 18:16
  **/
 @Data
-@AllArgsConstructor
 public class SongDto {
 
     /** 名称 */
     private String name;
+
+    public SongDto() {
+    }
+
+    public SongDto(String name) {
+        this.name = name;
+    }
 }

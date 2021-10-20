@@ -2,7 +2,8 @@ package com.wenxianm;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.cloud.client.SpringCloudApplication;
-import org.springframework.cloud.netflix.feign.EnableFeignClients;
+import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
+import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 /**
@@ -14,6 +15,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableScheduling
 @EnableFeignClients
 @SpringCloudApplication
+@EnableEurekaClient
 public class BlogQuartzServiceApplication {
     public static void main(String[] args) {
         SpringApplication.run(BlogQuartzServiceApplication.class, args);

@@ -1,6 +1,10 @@
 package com.wenxianm.utils;
 
 
+import com.wenxianm.lambda.LambdaUtil;
+import com.wenxianm.lambda.SerializedFunction;
+import org.apache.ibatis.reflection.property.PropertyNamer;
+
 import java.lang.invoke.SerializedLambda;
 
 /**

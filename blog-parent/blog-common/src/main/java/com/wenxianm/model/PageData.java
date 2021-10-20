@@ -1,5 +1,6 @@
 package com.wenxianm.model;
 
+import com.google.common.collect.Lists;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -22,4 +23,10 @@ public class PageData<E> implements Serializable {
     private List<E> list;
 
     private Page page;
+
+    public static PageData emptyPage() {
+        PageData pageData = new PageData();
+        pageData.setList(Lists.newArrayList());
+        return pageData;
+    }
 }

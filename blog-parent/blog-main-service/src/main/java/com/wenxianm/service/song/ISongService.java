@@ -3,7 +3,10 @@ package com.wenxianm.service.song;
 import com.wenxianm.model.Page;
 import com.wenxianm.model.PageData;
 import com.wenxianm.model.dto.SongDto;
+import com.wenxianm.model.entity.Song;
 import com.wenxianm.model.param.SongParam;
+
+import java.util.List;
 
 /**
  * @ClassName ISongService
@@ -20,5 +23,71 @@ public interface ISongService {
      * @date 2021/10/9 - 16:25
      * @return PageData<SongDto>
      **/
-    PageData<SongDto> listSong(SongParam songParam, Page page);
+    PageData<SongDto> listSong(SongParam songParam);
+
+    /**
+     * 获取30条没有mp3的歌曲
+     * @author caiwx
+     * @date 2021/10/15 - 10:58
+     * @return List<Song>
+     **/
+    List<Song> listSongNoMp3();
+
+    /**
+     * 根据歌曲id获取歌曲
+     * @param songId 歌曲id
+     * @author caiwx
+     * @date 2021/10/13 - 16:46
+     * @return SongDto
+     **/
+    SongDto getBySongId(Long songId);
+
+    /**
+     * 新增歌曲
+     * @param song
+     * @author caiwx
+     * @date 2021/10/12 - 18:02
+     **/
+    void addSong(Song song);
+
+    /**
+     * 更新歌曲
+     * @param song
+     * @author caiwx
+     * @date 2021/10/13 - 18:16
+     **/
+    void updateSong(Song song);
+
+
+    /**
+     * 根据歌曲名称爬取歌曲
+     * @param name 歌曲名称
+     * @author caiwx
+     * @date 2021/10/12 - 17:49
+     **/
+    void reptileSong(String name);
+
+    /**
+     * 根据歌曲id获取歌曲的播放url
+     * @param songIds 歌曲id
+     * @author caiwx
+     * @date 2021/10/13 - 18:05
+     **/
+    void reptileMp3Url(List<Long> songIds);
+
+    /**
+     * reptile歌曲排行榜
+     * @param topUrls 排行榜url
+     * @author caiwx
+     * @date 2021/10/19 - 11:46
+     **/
+    void reptileTopList(List<String> topUrls);
+
+    /**
+     * reptile歌手的热门歌曲
+     * @param artistId 歌手id
+     * @author caiwx
+     * @date 2021/10/19 - 11:46
+     **/
+    void reptileArtistHotSongs(Long artistId);
 }
