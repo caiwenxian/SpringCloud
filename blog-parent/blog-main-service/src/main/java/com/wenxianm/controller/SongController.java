@@ -48,4 +48,9 @@ public class SongController implements SongApi{
     public void reptileTopList() {
         songService.reptileTopList(Lists.newArrayList());
     }
+
+    @Override
+    public void reptileArtistHotSongs(Long artistId) {
+        songService.reptileArtistHotSongs(artistId);
+    }
 }

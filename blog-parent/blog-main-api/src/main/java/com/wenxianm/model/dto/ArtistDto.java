@@ -1,9 +1,9 @@
-package com.wenxianm.model.entity;
+package com.wenxianm.model.dto;
 
 
 import lombok.Data;
 
-import javax.persistence.Table;
+import java.io.Serializable;
 
 /**
  * 歌手
@@ -11,8 +11,7 @@ import javax.persistence.Table;
  * @date 2021/10/20 - 10:14
  **/
 @Data
-@Table(name = "t_artist")
-public class Artist extends BaseEntity {
+public class ArtistDto implements Serializable {
 
     /**
      * 歌手id
@@ -35,14 +34,14 @@ public class Artist extends BaseEntity {
      */
     private Integer reptileHotSong;
 
-    public Artist() {
+    public ArtistDto() {
     }
 
-    public Artist(String name) {
+    public ArtistDto(String name) {
         this.name = name;
     }
 
-    public Artist(Long artistId, String name, Integer origin) {
+    public ArtistDto(Long artistId, String name, Integer origin) {
         this.artistId = artistId;
         this.name = name;
         this.origin = origin;

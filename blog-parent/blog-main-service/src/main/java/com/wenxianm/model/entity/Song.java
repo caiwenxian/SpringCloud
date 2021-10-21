@@ -1,5 +1,6 @@
 package com.wenxianm.model.entity;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import javax.persistence.Table;
@@ -10,6 +11,7 @@ import javax.persistence.Table;
  * @Date 2021/10/9 16:07
  **/
 @Data
+@AllArgsConstructor
 @Table(name = "t_song")
 public class Song extends BaseEntity {
 
@@ -41,8 +43,9 @@ public class Song extends BaseEntity {
 
     /**
      * 来源
+     * @see com.wenxianm.model.enums.SongOriginEnum
      */
-    private String origin;
+    private Integer origin;
 
     /**
      * 序号
@@ -60,5 +63,20 @@ public class Song extends BaseEntity {
         this.songId = songId;
         this.name = name;
         this.artistId = artistId;
+    }
+
+    public Song(Long songId, String name, Long artistId, Integer origin) {
+        this.songId = songId;
+        this.name = name;
+        this.artistId = artistId;
+        this.origin = origin;
+    }
+
+    public Song(Long songId, String name, Long artistId, Integer origin, Integer num) {
+        this.songId = songId;
+        this.name = name;
+        this.artistId = artistId;
+        this.origin = origin;
+        this.num = num;
     }
 }

@@ -61,4 +61,13 @@ public interface SongApi {
     @GetMapping(value = "/reptileTopList")
     void reptileTopList();
 
+    /**
+     * reptile歌手热门歌曲
+     * @param artistId 歌手id
+     * @author caiwx
+     * @date 2021/10/20 - 16:06
+     **/
+    @GetMapping(value = "/reptileArtistHotSongs")
+    void reptileArtistHotSongs(@RequestParam Long artistId);
+
 }
