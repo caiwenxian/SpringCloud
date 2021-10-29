@@ -13,6 +13,15 @@ spring:
     multipart:
       max-file-size: 25MB
       max-request-size: 100MB
+# apollo 相关配置
+app:
+  id: apollo-blog-quartz-service-appid
+apollo:
+  meta: http://192.168.115.128:8091
+  bootstrap:
+    enable: true
+env: DEV
+
 logging:
   config: classpath:logback.xml
 spring.sleuth.feign.enabled: false

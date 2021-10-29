@@ -1,5 +1,7 @@
 package com.wenxianm.model;
 
+import com.wenxianm.utils.IDUtil;
+
 /**
  * @ClassName Constant
  * @Author cwx
@@ -26,4 +28,13 @@ public class Constants {
     public static final String WANG_YI_MP3_URL = "/api/song/enhance/player/url/";
 
     public static final String WANG_YI_HOT_SONG = "/api/artist/";
+
+    public static final String ROCKET_MQ_MESSAGE_ID = "rocketmq_MESSAGE_ID";
+
+    public static final String MQ_LOCK = "mq_lock_";
+
+    public static final String MQ = "MQ";
+
+
+
 }

@@ -55,11 +55,12 @@ public interface SongApi {
 
     /**
      * reptile歌曲排行榜
+     * @param urls 榜单url
      * @author caiwx
      * @date 2021/10/19 - 17:10
      **/
-    @GetMapping(value = "/reptileTopList")
-    void reptileTopList();
+    @PostMapping(value = "/reptileTopList")
+    void reptileTopList(@RequestBody List<String> urls);
 
     /**
      * reptile歌手热门歌曲

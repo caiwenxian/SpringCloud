@@ -1,9 +1,12 @@
 package com.wenxianm;
 
+import com.ctrip.framework.apollo.spring.annotation.EnableApolloConfig;
+import com.wenxianm.mq.MySource;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.cloud.client.SpringCloudApplication;
 import org.springframework.cloud.openfeign.EnableFeignClients;
+import org.springframework.cloud.stream.annotation.EnableBinding;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
@@ -19,6 +22,8 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableAsync
 @SpringCloudApplication
 @EnableTransactionManagement
+@EnableBinding(MySource.class)
+@EnableApolloConfig
 public class BlogMainServiceApplication {
 
     public static void main(String[] args) {

@@ -33,7 +33,12 @@ public class ReptileTopSongTask extends IJobHandler {
     public ReturnT<String> execute(String param) throws Exception {
         log.info("执行ReptileTopSongTask");
         XxlJobLogger.log("开始执行ReptileTopSongTask");
-        songApi.reptileTopList();
+        if (!StringUtils.isEmpty(param)) {
+            List<String> collect = Arrays.stream(param.split(",")).collect(Collectors.toList());
+            songApi.reptileTopList(collect);
+            return SUCCESS;
+        }
+        songApi.reptileTopList(Lists.newArrayList());
         XxlJobLogger.log("结束执行ReptileTopSongTask");
         return SUCCESS;
     }

@@ -17,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.session.RowBounds;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import tk.mybatis.mapper.entity.Example;
 
@@ -37,19 +38,29 @@ public class ArtistServiceImpl implements IArtistService {
     private IArtistDao artistDao;
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void addOne(Artist artist) {
-        if (Objects.isNull(artist.getArtistId())) {
-            log.warn("歌手id不可为空");
-            throw new BaseException(ServerCode.WRONG_PARAM, "歌手id不可为空");
+        try {
+            if (Objects.isNull(artist.getArtistId())) {
+                log.warn("歌手id不可为空");
+                throw new BaseException(ServerCode.WRONG_PARAM, "歌手id不可为空");
+            }
+            if (this.getByArtistId(artist.getArtistId()) != null) {
+                log.info("歌手已存在");
+                return;
+            }
+            artist.setId(IDUtil.random4s());
+            artist.setCreateTime(new Date());
+            artist.setModifyTime(new Date());
+            artistDao.insertSelective(artist);
+        } catch (BaseException e) {
+            log.error("新增歌手出错", e);
+            throw new BaseException(e.getServerCode(), e.getDesc());
+        } catch (Exception e) {
+            log.error("新增歌手出错", e);
+            throw new BaseException(ServerCode.ERROR, "新增歌手出错");
         }
-        if (this.getByArtistId(artist.getArtistId()) != null) {
-            log.info("歌手已存在");
-            return;
-        }
-        artist.setId(IDUtil.random4s());
-        artist.setCreateTime(new Date());
-        artist.setModifyTime(new Date());
-        artistDao.insertSelective(artist);
+
     }
 
     @Override

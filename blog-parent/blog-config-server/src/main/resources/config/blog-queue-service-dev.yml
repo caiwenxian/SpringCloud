@@ -26,19 +26,33 @@ spring:
     stream:
       default-binder: rocketmq
       bindings:
-        output1:
+        blog_main_reptile_top_song:
           destination: topic_blog_main_song
           content-type: application/json
+          group: gid_queue_blog_main_reptile_top_song
+        blog_test:
+          destination: topic_blog_main_song
+          content-type: application/json
+          group: gid_queue_blog_test
       rocketmq:
         binder:
           name-server: 192.168.115.128:9876
         bindings:
-          output1:
-            producer:
-              group: g_blog_main
-              sync: true
+          blog_main_reptile_top_song:
+            consumer:
+              enabled: true
+              broadcasting: false
+              orderly: true
+              tags: blog_main_reptile_top_song
+          blog_test:
+            consumer:
+              enabled: true
+              broadcasting: false
+              orderly: true
+              tags: blog_test
+      ignore-msg-id: C0A87381077B439F5B3D8416CFBD0017,AC10D32823CC18B4AAC283273B300063,AC10D32823CC18B4AAC2832EC7A20064,AC10D3282C5018B4AAC289399A810000
 server:
-  port: 8001
+  port: 8003
   tomcat:
     basedir: /home/blog/tomcattmp
 

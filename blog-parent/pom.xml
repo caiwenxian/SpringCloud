@@ -22,6 +22,7 @@
         <spring-cloud.version>Finchley.SR2</spring-cloud.version>
         <blog-main-api-version>1.0-SNAPSHOT</blog-main-api-version>
         <blog-common-version>1.0-SNAPSHOT</blog-common-version>
+        <spring.cloud.alibaba.version>2.0.3.RELEASE</spring.cloud.alibaba.version>
     </properties>
 
     <modules>
@@ -32,6 +33,7 @@
         <module>blog-main-service</module>
         <module>blog-quartz-service</module>
         <module>blog-gateway</module>
+        <module>blog-queue-service</module>
     </modules>
 
     <dependencies>
@@ -76,8 +78,38 @@
             <artifactId>guava</artifactId>
             <version>22.0</version>
         </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.ctrip.framework.apollo</groupId>
+            <artifactId>apollo-client</artifactId>
+            <version>1.3.0</version>
+        </dependency>
 
     </dependencies>
+
+    <dependencyManagement>
+        <!--<dependencies>
+            <dependency>
+                <groupId>com.alibaba.cloud</groupId>
+                <artifactId>spring-cloud-starter-stream-rocketmq</artifactId>
+                <version>${spring-cloud-starter-stream-rocketmq.version}</version>
+                &lt;!&ndash;<exclusions>
+                    <exclusion>
+                        <artifactId>rocketmq-spring-boot-starter</artifactId>
+                        <groupId>org.apache.rocketmq</groupId>
+                    </exclusion>
+                </exclusions>&ndash;&gt;
+            </dependency>
+            <dependency>
+                <groupId>org.apache.rocketmq</groupId>
+                <artifactId>rocketmq-spring-boot-starter</artifactId>
+                <version>${rocketmq-spring-boot-starter.version}</version>
+            </dependency>
+        </dependencies>-->
+    </dependencyManagement>
 
 
 

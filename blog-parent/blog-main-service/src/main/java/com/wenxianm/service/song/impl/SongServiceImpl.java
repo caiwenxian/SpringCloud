@@ -4,6 +4,9 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Lists;
+import com.wenxianm.model.entity.MqMessage;
+import com.wenxianm.model.enums.*;
+import com.wenxianm.mq.MqProducer;
 import com.wenxianm.dao.song.ISongDao;
 import com.wenxianm.exception.BaseException;
 import com.wenxianm.model.Constants;
@@ -13,14 +16,13 @@ import com.wenxianm.model.dto.ArtistDto;
 import com.wenxianm.model.dto.SongDto;
 import com.wenxianm.model.entity.Artist;
 import com.wenxianm.model.entity.Song;
-import com.wenxianm.model.enums.SongOriginEnum;
+import com.wenxianm.model.mq.TopSongMessage;
 import com.wenxianm.model.param.SongParam;
+import com.wenxianm.mq.MqProducerWithoutStream;
+import com.wenxianm.service.mq.IMqMessageService;
 import com.wenxianm.service.song.IArtistService;
 import com.wenxianm.service.song.ISongService;
-import com.wenxianm.utils.BeanUtil;
-import com.wenxianm.utils.HttpClientHelper;
-import com.wenxianm.utils.IDUtil;
-import com.wenxianm.utils.PojoUtil;
+import com.wenxianm.utils.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.session.RowBounds;
 import org.jsoup.Jsoup;
@@ -57,6 +59,12 @@ public class SongServiceImpl implements ISongService {
     private DataSourceTransactionManager dataSourceTransactionManager;
     @Autowired
     private TransactionDefinition transactionDefinition;
+    @Autowired
+    private ISongService songService;
+    @Autowired
+    private MqProducerWithoutStream mqProducer;
+    @Autowired
+    private IMqMessageService mqMessageService;
 
     @Override
     public PageData<SongDto> listSong(SongParam songParam) {
@@ -150,7 +158,6 @@ public class SongServiceImpl implements ISongService {
             params.put("limit", 10);
             params.put("offset", 0);
             params.put("s", name);
-
             String result = null;
             try {
                 result = HttpClientHelper.sendGet(url.toString(), params, "UTF-8");
@@ -176,7 +183,7 @@ public class SongServiceImpl implements ISongService {
                 songEntity.setOrigin(SongOriginEnum.WANG_YI.getCode());
                 Long artistId = ((JSONObject) song.getJSONArray("artists").get(0)).getLong("id");
                 songEntity.setArtistId(artistId);
-                this.addSong(songEntity);
+                songService.addSong(songEntity);
                 String artistName = ((JSONObject) song.getJSONArray("artists").get(0)).getString("name");
                 Artist artist = new Artist(artistId, artistName, SongOriginEnum.WANG_YI.getCode());
                 artistService.addOne(artist);
@@ -187,7 +194,6 @@ public class SongServiceImpl implements ISongService {
             log.error("根据名称reptile歌曲出错", e);
             throw new BaseException(ServerCode.ERROR, "根据名称reptile歌曲出错");
         }
-
     }
 
     @Override
@@ -236,6 +242,7 @@ public class SongServiceImpl implements ISongService {
             if (!CollectionUtils.isEmpty(topUrls)) {
                 topUrl = topUrls.get(0);
             }
+            log.info("top_url: ", topUrl);
             // 获取第一个排行榜的歌曲
             Document document = Jsoup.connect(Constants.WANG_YI_API + topUrl).get();
             String json = document.select("textarea[id=song-list-pre-data]").text();
@@ -251,7 +258,7 @@ public class SongServiceImpl implements ISongService {
                     Long artistId = ((JSONObject) jsonObject.getJSONArray("artists").get(0)).getLong("id");
                     Song song = new Song(songId, name, artistId, SongOriginEnum.WANG_YI.getCode());
                     song.setNum(Constants.ONE);
-                    this.addSong(song);
+                    songService.addSong(song);
                     String artistName = ((JSONObject) jsonObject.getJSONArray("artists").get(0)).getString("name");
                     Artist artist = new Artist(artistId, artistName, SongOriginEnum.WANG_YI.getCode());
                     artistService.addOne(artist);
@@ -266,9 +273,22 @@ public class SongServiceImpl implements ISongService {
                 Elements topElements = document.select("a[href^=/discover]");
                 topUrls = topElements.stream().map(v -> v.attr("href")).distinct().collect(Collectors.toList());
                 topUrls.remove(0);
-                while (!CollectionUtils.isEmpty(topUrls)) {
-                    Thread.sleep(3000);
-                    this.reptileTopList(topUrls);
+                int index = 1;
+                for (String url : topUrls) {
+                    // 推送到mq
+                    TopSongMessage topSongMessage = new TopSongMessage();
+                    topSongMessage.setUrl(url);
+                    DelayTimeLevelEnum delayTimeLevel = DelayTimeLevelEnum.getDelayTimeLevel(index);
+                    MqProducerWithoutStream.MessageResponse messageResponse = mqProducer.output1().send(topSongMessage, MQTagEnum.BLOG_MAIN_REPTILE_TOP_SONG, delayTimeLevel);
+                    index = index > 17 ? index : index + 1;
+                    if (messageResponse.getSuccess()) {
+                        MqMessage message = MqMessage.initRocketMq(MqMessageTypeEnum.REPTILE_TOP_SONG.getCode(),
+                                MqMessageStatusEnum.DOING.getCode(),
+                                JsonUtil.objToStr(topSongMessage),
+                                messageResponse.getId()
+                                );
+                        mqMessageService.addOne(message);
+                    }
                 }
                 return;
             }
@@ -295,9 +315,10 @@ public class SongServiceImpl implements ISongService {
                 return;
             }
             artists.forEach(v -> {
-                this.reptileHotSongs(v);
+                // 通过songService调用才能开启事务
+                songService.reptileHotSongs(v);
                 try {
-                    Thread.sleep(10);
+                    Thread.sleep(1000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -309,6 +330,7 @@ public class SongServiceImpl implements ISongService {
     }
 
     @Transactional(rollbackFor = Exception.class)
+    @Override
     public void reptileHotSongs(Long artistId) {
         try {
             StringBuffer url = new StringBuffer();

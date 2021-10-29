@@ -37,5 +37,20 @@ public class IDUtil {
         return stringBuffer.toString();
     }
 
+    /**
+     * 雪花算法生成随机id
+     * @author caiwx
+     * @date 2021/10/19 - 17:08
+     * @return String
+     **/
+    public static String random4mq() {
+        Long id = SNOWFLAKE_ID_WORKER.nextId();
+        StringBuffer stringBuffer = new StringBuffer("MQ");
+        stringBuffer.append(DateUtil.get(new Date(), DateUtil.Field.YEAR));
+        stringBuffer.append(DateUtil.get(new Date(), DateUtil.Field.MONTH));
+        stringBuffer.append(id);
+        return stringBuffer.toString();
+    }
+
 
 }

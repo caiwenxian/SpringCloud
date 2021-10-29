@@ -90,4 +90,12 @@ public interface ISongService {
      * @date 2021/10/19 - 11:46
      **/
     void reptileArtistHotSongs(Long artistId);
+
+    /**
+     * reptile歌手的热门歌曲
+     * @param artistId
+     * @author caiwx
+     * @date 2021/10/28 - 10:58
+     **/
+    void reptileHotSongs(Long artistId);
 }

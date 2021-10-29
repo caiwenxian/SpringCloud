@@ -9,7 +9,12 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>blog-main-service</artifactId>
+    <artifactId>blog-queue-service</artifactId>
+
+    <properties>
+        <maven.compiler.source>8</maven.compiler.source>
+        <maven.compiler.target>8</maven.compiler.target>
+    </properties>
 
     <dependencies>
         <dependency>
@@ -130,5 +135,4 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
-
 </project>

@@ -1,18 +1,28 @@
 package com.wenxianm.controller;
 
-import com.google.common.collect.Lists;
 import com.wenxianm.annotation.ApiMethod;
 import com.wenxianm.api.SongApi;
-import com.wenxianm.model.Page;
 import com.wenxianm.model.PageData;
 import com.wenxianm.model.dto.SongDto;
+import com.wenxianm.model.entity.MqMessage;
+import com.wenxianm.model.enums.MQTagEnum;
+import com.wenxianm.model.enums.MqMessageStatusEnum;
+import com.wenxianm.model.enums.MqMessageTypeEnum;
+import com.wenxianm.model.mq.TopSongMessage;
 import com.wenxianm.model.param.SongParam;
+import com.wenxianm.mq.MqProducer;
+import com.wenxianm.mq.MqProducerWithoutStream;
+import com.wenxianm.service.mq.IMqMessageService;
 import com.wenxianm.service.song.ISongService;
+import com.wenxianm.utils.IDUtil;
+import com.wenxianm.utils.JsonUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.rocketmq.client.producer.SendResult;
+import org.apache.rocketmq.client.producer.SendStatus;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -27,6 +37,10 @@ public class SongController implements SongApi{
 
     @Autowired
     ISongService songService;
+    @Autowired
+    MqProducerWithoutStream mqProducer;
+    @Autowired
+    IMqMessageService mqMessageService;
 
     @ApiMethod
     @Override
@@ -45,12 +59,28 @@ public class SongController implements SongApi{
     }
 
     @Override
-    public void reptileTopList() {
-        songService.reptileTopList(Lists.newArrayList());
+    public void reptileTopList(@RequestBody List<String> urls) {
+        songService.reptileTopList(urls);
     }
 
     @Override
     public void reptileArtistHotSongs(Long artistId) {
         songService.reptileArtistHotSongs(artistId);
+    }
+
+    @GetMapping("testMq")
+    public void testMq() {
+        TopSongMessage topSongMessage = new TopSongMessage();
+        topSongMessage.setId(IDUtil.random());
+        topSongMessage.setUrl("/discover/toplist?id=5453912201");
+        MqProducerWithoutStream.MessageResponse messageResponse = mqProducer.output1().send(topSongMessage, MQTagEnum.BLOG_TEST);
+        if (messageResponse.getSuccess()) {
+            MqMessage message = MqMessage.initRocketMq(MqMessageTypeEnum.REPTILE_TOP_SONG.getCode(),
+                    MqMessageStatusEnum.DOING.getCode(),
+                    JsonUtil.objToStr(topSongMessage),
+                    messageResponse.getId()
+            );
+            mqMessageService.addOne(message);
+        }
     }
 }
