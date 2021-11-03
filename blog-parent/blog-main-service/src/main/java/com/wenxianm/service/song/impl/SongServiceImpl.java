@@ -6,6 +6,8 @@ import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Lists;
 import com.wenxianm.model.entity.MqMessage;
 import com.wenxianm.model.enums.*;
+import com.wenxianm.model.param.ArtistParam;
+import com.wenxianm.model.vo.SongSearchVO;
 import com.wenxianm.mq.MqProducer;
 import com.wenxianm.dao.song.ISongDao;
 import com.wenxianm.exception.BaseException;
@@ -80,6 +82,18 @@ public class SongServiceImpl implements ISongService {
         List<Song> songs = songDao.selectByExampleAndRowBounds(example, rowBounds);
         List<SongDto> list = BeanUtil.fromList(songs, SongDto.class);
         return new PageData<>(list, songParam);
+    }
+
+    @Override
+    public List<SongDto> list(SongParam songParam) {
+        Example example = new Example(Song.class);
+        Example.Criteria criteria = example.createCriteria();
+        criteria.andLike(PojoUtil.field(Song::getName), "%" + songParam.getName() + "%");
+        List<Song> songs = songDao.selectByExample(example);
+        if (CollectionUtils.isEmpty(songs)) {
+            return Lists.newArrayList();
+        }
+        return BeanUtil.fromList(songs, SongDto.class);
     }
 
     @Override
@@ -370,5 +384,18 @@ public class SongServiceImpl implements ISongService {
             log.error("reptile歌手的热门歌曲出错", e);
             throw new BaseException(ServerCode.ERROR, "reptile歌手的热门歌曲出错");
         }
+    }
+
+    @Override
+    public SongSearchVO search(String name) {
+        List<SongDto> songs = this.list(new SongParam(name));
+        songs.forEach(v -> {
+            ArtistDto artist = artistService.getByArtistId(v.getArtistId());
+            if (Objects.nonNull(artist)) {
+                v.setArtistName(artist.getName());
+            }
+        });
+        List<ArtistDto> artists = artistService.list(new ArtistParam(name));
+        return new SongSearchVO(songs, artists);
     }
 }

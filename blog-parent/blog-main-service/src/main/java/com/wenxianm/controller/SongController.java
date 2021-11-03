@@ -10,6 +10,7 @@ import com.wenxianm.model.enums.MqMessageStatusEnum;
 import com.wenxianm.model.enums.MqMessageTypeEnum;
 import com.wenxianm.model.mq.TopSongMessage;
 import com.wenxianm.model.param.SongParam;
+import com.wenxianm.model.vo.SongSearchVO;
 import com.wenxianm.mq.MqProducer;
 import com.wenxianm.mq.MqProducerWithoutStream;
 import com.wenxianm.service.mq.IMqMessageService;
@@ -17,6 +18,7 @@ import com.wenxianm.service.song.ISongService;
 import com.wenxianm.utils.IDUtil;
 import com.wenxianm.utils.JsonUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.rocketmq.client.producer.SendResult;
 import org.apache.rocketmq.client.producer.SendStatus;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,6 +68,21 @@ public class SongController implements SongApi{
     @Override
     public void reptileArtistHotSongs(Long artistId) {
         songService.reptileArtistHotSongs(artistId);
+    }
+
+    /**
+     * 搜索
+     * @param name
+     * @author caiwx
+     * @date 2021/11/3 - 16:37
+     * @return SongSearchVO
+     **/
+    @GetMapping("/search")
+    public SongSearchVO search(String name) {
+        if (StringUtils.isBlank(name)) {
+            return new SongSearchVO();
+        }
+        return songService.search(name.trim());
     }
 
     @GetMapping("testMq")

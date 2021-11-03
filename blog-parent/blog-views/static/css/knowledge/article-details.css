@@ -1,0 +1,89 @@
+.div-article-details .title {
+    font-size: 24px;
+    font-weight: 500;
+    line-height: 150%;
+    margin: 10px;
+    padding: 0;
+    text-align: center;
+}
+
+.div-article-top {
+    color: #14b0e6;
+    padding: 5px;
+}
+
+.div-article-top label {
+    margin-left: 10px;
+}
+
+/*.div-article-top-right {
+    !*position: absolute;*!
+    right: 5px;
+    float: right;
+    !*margin-right: 10px;*!
+}*/
+
+.div-article-comment {
+    /*height: 220px;*/
+    margin-bottom: 100px;
+    position: relative;
+    width: 60%;
+    left: 19%;
+    background-color: white;
+    padding: 20px 50px;
+    margin-top: 20px;
+    box-shadow: 0 2px 10px 0 rgba(0, 0, 0, .1);
+    /*margin-top: -70px;*/
+}
+
+.layui-input-block {
+    margin-bottom: 10px;
+    margin-left: 0 !important;
+
+}
+
+p {
+    margin: 10px 0;
+    line-height: 1.5;
+}
+
+.div-no-login {
+    position: absolute;
+    width: 100%;
+    min-height: 100px;
+    top: 0;
+    text-align: center;
+    line-height: 100px;
+    color: #666;
+}
+
+.li-comment {
+    position: relative;
+    padding: 20px 0 10px;
+    border-bottom: 1px dotted #DFDFDF;
+}
+
+.comment-bottom span:hover {
+    opacity: 0.5;
+}
+
+.comment-reply .hidden {
+    /*float: right;*/
+    margin-left: 15px;
+    color: #009688;
+    cursor: pointer;
+}
+
+.comment-reply .hidden:hover {
+    opacity: 0.5;
+}
+
+.comment-reply-details {
+    background-color: aliceblue;
+    padding: 15px;
+    margin-left: 15px;
+}
+
+.comment-reply-details li {
+    margin-bottom: 15px;
+}

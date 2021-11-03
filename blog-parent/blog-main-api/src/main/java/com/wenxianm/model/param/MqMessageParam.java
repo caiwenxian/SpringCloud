@@ -23,4 +23,14 @@ public class MqMessageParam extends Page implements Serializable {
      */
     private String mqId;
 
+    /**
+     * mq类型
+     */
+    private Integer type;
+
+    /**
+     * mq状态
+     */
+    private Integer status;
+
 }

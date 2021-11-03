@@ -5,6 +5,7 @@ import com.wenxianm.api.MqMessageApi;
 import com.wenxianm.model.PageData;
 import com.wenxianm.model.dto.MqMessageDto;
 import com.wenxianm.model.dto.SongDto;
+import com.wenxianm.model.param.MqMessageParam;
 import com.wenxianm.service.mq.IMqMessageService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,5 +30,10 @@ public class MqMessageController implements MqMessageApi {
     @Override
     public void update(@RequestBody MqMessageDto mqMessageDto) {
         mqMessageService.updateOne(mqMessageDto);
+    }
+
+    @Override
+    public PageData<MqMessageDto> listPage(MqMessageParam mqMessageParam) {
+        return mqMessageService.listPage(mqMessageParam);
     }
 }

@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>music search</title>
+    <script src="/blog-views/static/plugins/jquery/jquery.min.js"></script>
+    <script src="/blog-views/static/plugins/layui/layui.js"></script>
+    <script src="/blog-views/static/plugins/vue/vue.min.js"></script>
+    <script src="/blog-views/static/js/common/http.js"></script>
+    <script src="/blog-views/static/js/common/common.js"></script>
+    <link rel='stylesheet' href='/blog-views/static/plugins/layui/css/layui.css'>
+    <link rel='stylesheet' href='/blog-views/static/css/common.css'>
+</head>
+<style>
+    #music {
+        width: 65%;
+        margin-left: 17.5%;
+    }
+    #music div {
+        margin-top: 30px;
+    }
+    .search-title, .search-history-title, .hot-song-title, p {
+        font-size: 25px;
+        font-weight: 600;
+    }
+    #music-search input {
+        width: 90%;
+        line-height: 30px;
+        border: 1px solid darkgreen;
+        border-radius: 3px;
+        outline:none;
+        padding-left: 5px;
+    }
+    #music-search img {
+        vertical-align: middle;
+        width: 40px;
+        opacity: 0.8;
+        cursor: pointer;
+    }
+    #music-search img:active {
+        opacity: 1;
+    }
+    .search-history-content span {
+        line-height: 50px;
+        border-radius: 15px;
+        border: 1px solid rebeccapurple;
+        padding: 5px 6px 5px 6px;
+        color: #787575;
+        margin-right: 10px;
+        white-space: nowrap;
+        cursor: pointer;
+    }
+    .search-history-content span:active {
+        color: rebeccapurple;
+    }
+    .hot-song-content div {
+        line-height: 25px;
+        padding: 12px 6px 12px 6px;
+        color: #787575;
+        margin-right: 30px;
+        white-space: nowrap;
+        cursor: pointer;
+        margin-top: 0px !important;
+        width: 200px;
+        display: inline-block;
+    }
+    .hot-song-content div:hover {
+        color: #ef2ff5;
+        background-color: #f5f5f7;
+    }
+    .hot-song-content div .times{
+        margin-right: 0px;
+        width: 20px;
+    }
+    .hot-song-content div .song-name{
+        margin-right: 0px;
+        width: 180px;
+        display: inline-block;
+    }
+    #song-result-item, #artist-result-item {
+        line-height: 25px;
+        padding: 12px 6px 12px 6px;
+        color: #787575;
+        margin-right: 30px;
+        white-space: nowrap;
+        cursor: pointer;
+        margin-top: 0px !important;
+        width: 300px;
+        display: inline-block;
+    }
+    #song-result-item:hover, #artist-result-item:hover{
+        color: #2ff588;
+        background-color: #f5f5f7;
+    }
+    #song-result-item .song-name, .artist-name{
+        margin-right: 0px;
+        display: inline-block;
+    }
+</style>
+<body style="background-color: white">
+    <div id="music">
+        <div id="music-search">
+            <div>
+                <p class="search-title">搜索</p>
+            </div>
+            <div>
+                <input id="search-key" type="text" placeholder="开始搜索" v-model="searchKey">
+                <img src="/blog-views/static/images/clear.png" v-on:click="reset()">
+            </div>
+        </div>
+        <div id="default" v-bind:class="{none: showWhat == 'searchResult'}">
+            <div id="music-search-history">
+                <div>
+                    <p class="search-history-title">历史搜索</p>
+                </div>
+                <div class="search-history-content">
+                    <span v-for="(v, index) in 20">邓紫棋</span>
+                </div>
+            </div>
+            <div id="music-search-hot">
+                <div>
+                    <p class="hot-song-title">热门歌曲</p>
+                </div>
+                <div class="hot-song-content">
+                    <div v-for="(v, index) in 20">
+                        <span class="song-name">手心的蔷薇</span>
+                        <span class="times">99</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="search-result" v-bind:class="{none: showWhat == 'default'}">
+            <div id="song-result">
+                <p class="hot-song-title">单曲</p>
+                <div id="song-result-div">
+                    <div id="song-result-item" v-for="(item, index) in searchResultSongs">
+                        <span class="song-name">{{item.name}}-{{item.artistName}}</span>
+                    </div>
+                </div>
+            </div>
+            <div id="artist-result">
+                <p class="hot-song-title">歌手</p>
+                <div id="artist-result-div">
+                    <div id="artist-result-item" v-for="(item, index) in searchResultArtists">
+                        <span class="artist-name">{{item.name}}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+<script src="/blog-views/static/js/music-search.js"></script>
+<script>
+    var isInputZh = false;
+    document.querySelector('#search-key').addEventListener('compositionstart', function (e) {
+        isInputZh = true;
+    }, false);
+    document.querySelector('#search-key').addEventListener('compositionend', function (e) {
+        isInputZh = false;
+        search.vm.searchSong();
+    }, false);
+    document.querySelector('#search-key').addEventListener('input', function (e) {
+        if (isInputZh) return;
+        search.vm.searchSong();
+    }, false);
+</script>

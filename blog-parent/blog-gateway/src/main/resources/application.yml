@@ -8,9 +8,9 @@ spring:
     gateway:
       routes:
       - id: blog-mian-service
-        uri: http://127.0.0.1:8001/
+        uri: lb://blog-main-service
         predicates:
-        - Path=/song/**
+        - Path=/blog/**
       - id: baidu
         uri: http://top.baidu.com
         predicates:

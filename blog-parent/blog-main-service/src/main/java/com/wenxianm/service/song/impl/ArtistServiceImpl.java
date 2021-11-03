@@ -91,7 +91,14 @@ public class ArtistServiceImpl implements IArtistService {
 
     @Override
     public List<ArtistDto> list(ArtistParam artistParam) {
-        return null;
+        Example example = new Example(Artist.class);
+        Example.Criteria criteria = example.createCriteria();
+        criteria.andLike(PojoUtil.field(Artist::getName), "%" + artistParam.getName() + "%");
+        List<Artist> artists = artistDao.selectByExample(example);
+        if (CollectionUtils.isEmpty(artists)) {
+           return Lists.newArrayList();
+        }
+        return BeanUtil.fromList(artists, ArtistDto.class);
     }
 
     @Override

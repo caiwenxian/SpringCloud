@@ -21,4 +21,13 @@ public enum MqMessageStatusEnum {
     private Integer code;
 
     private String des;
+
+    public static MqMessageStatusEnum getByCode(Integer code) {
+        for (MqMessageStatusEnum value : MqMessageStatusEnum.values()) {
+            if (value.getCode().equals(code)) {
+                return value;
+            }
+        }
+        return null;
+    }
 }

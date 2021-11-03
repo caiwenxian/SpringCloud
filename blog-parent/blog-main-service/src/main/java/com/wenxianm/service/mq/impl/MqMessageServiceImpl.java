@@ -23,6 +23,7 @@ import tk.mybatis.mapper.entity.Example;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @ClassName MqMessageServiceImpl
@@ -96,12 +97,21 @@ public class MqMessageServiceImpl implements IMqMessageService {
     public PageData<MqMessageDto> listPage(MqMessageParam param) {
         Example example = new Example(MqMessage.class);
         Example.Criteria criteria = example.createCriteria();
-        criteria.andEqualTo(PojoUtil.field(MqMessage::getMqId), param.getMqId());
+        if (!StringUtils.isEmpty(param.getMqId())) {
+            criteria.andEqualTo(PojoUtil.field(MqMessage::getMqId), param.getMqId().trim());
+        }
+        if (Objects.nonNull(param.getType())) {
+            criteria.andEqualTo(PojoUtil.field(MqMessage::getType), param.getType());
+        }
+        if (Objects.nonNull(param.getStatus())) {
+            criteria.andEqualTo(PojoUtil.field(MqMessage::getStatus), param.getStatus());
+        }
         int count = mqMessageDao.selectCountByExample(example);
         if (count == 0) {
             return PageData.emptyPage();
         }
         param.setTotalItem(count);
+        example.setOrderByClause("send_time desc");
         RowBounds rowBounds = new RowBounds(param.getOffset(), param.getLimit());
         List<MqMessage> mqMessages = mqMessageDao.selectByExampleAndRowBounds(example, rowBounds);
         return new PageData(BeanUtil.fromList(mqMessages, MqMessageDto.class), param);

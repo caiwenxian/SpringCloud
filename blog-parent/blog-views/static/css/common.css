@@ -1,0 +1,93 @@
+.shadow {
+    box-shadow: 0 2px 10px 0 rgba(0, 0, 0, .1);
+}
+
+[v-cloak] {
+    display: none;
+}
+
+.none {
+    display: none !important;
+}
+
+.block {
+    display: block !important;
+}
+
+.background-color-fff {
+    background: #fff;
+}
+
+.background-color-000 {
+    background: #000;
+}
+
+.radius {
+    border-radius: 50px;
+}
+
+.color-5FB878 {
+    color: #5FB878;
+}
+
+.center {
+    text-align: center;
+}
+
+.weight {
+    font-weight: 600;
+}
+
+.cursor-pointer {
+    cursor: pointer;
+}
+
+body {
+    background: whitesmoke;
+    font: 14px Helvetica Neue, Helvetica, PingFang SC, \5FAE\8F6F\96C5\9ED1, Tahoma, Arial, sans-serif !important;
+}
+
+.body {
+}
+
+.body-main {
+    min-height: 700px;
+    margin-bottom: 30px;
+    position: relative;
+    width: 60%;
+    left: 19%;
+    background-color: white;
+    padding: 20px 50px;
+    margin-top: 40px;
+    box-shadow: 0 2px 10px 0 rgba(0, 0, 0, .1);
+}
+
+.btn-outline-danger {
+    border: 1px solid #C92027;
+    background-color: transparent;
+    background-image: none;
+    border-color: #dc3545;
+    padding: 0.2rem 0.75rem;
+    font-size: 1rem;
+    line-height: 1.5;
+    border-radius: .25rem;
+}
+
+.color-ganger {
+    color: #C92027;
+}
+
+.color-ganger:hover {
+    background-color: #C92027;
+    color: white;
+}
+
+.color-red {
+    color: red;
+}
+.color-green {
+    color: green;
+}
+.color-orange {
+    color: orange;
+}

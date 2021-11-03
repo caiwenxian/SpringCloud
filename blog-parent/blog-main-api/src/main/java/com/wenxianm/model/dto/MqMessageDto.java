@@ -48,6 +48,10 @@ public class MqMessageDto implements Serializable {
     /** 消费后返回消息 */
     private String returnMsg;
 
+    public String getStatusStr() {
+        return MqMessageStatusEnum.getByCode(this.status).getDes();
+    }
+
     public MqMessageDto() {}
 
      public MqMessageDto(Integer type, int status, String data) {

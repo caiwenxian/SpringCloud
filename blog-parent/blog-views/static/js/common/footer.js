@@ -1,0 +1,15 @@
+// document.writeln("<%@ page contentType=\'text/html;charset=UTF-8\' language=\'java\' %>");
+document.writeln("<div class=\'footer\'>");
+document.writeln("    <p>Design By CWX  @ 2017</p>");
+document.writeln("    <p>Address: 华软丝木棉</p>");
+document.writeln("</div>");
+document.writeln("");
+document.writeln("<style>");
+document.writeln("    .footer {");
+document.writeln("        text-align: center;");
+document.writeln("        margin-top: 15px;");
+document.writeln("        background: #2F4056;");
+document.writeln("        padding: 20px 0;");
+document.writeln("        color: #d3d2d2;");
+document.writeln("    }");
+document.writeln("</style>");

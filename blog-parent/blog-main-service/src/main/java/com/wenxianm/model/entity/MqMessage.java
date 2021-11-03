@@ -1,5 +1,6 @@
 package com.wenxianm.model.entity;
 
+import com.wenxianm.model.enums.MqTypeEnum;
 import lombok.Data;
 
 import javax.persistence.Table;
@@ -74,6 +75,7 @@ public class MqMessage extends BaseEntity {
          message.setData(data);
          message.setMqId(mqId);
          message.setSendTime(new Date());
+         message.setType(MqTypeEnum.ROCKETMQ.getCode());
          return message;
      }
 

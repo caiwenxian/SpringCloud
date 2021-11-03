@@ -5,6 +5,7 @@ import com.wenxianm.model.PageData;
 import com.wenxianm.model.dto.SongDto;
 import com.wenxianm.model.entity.Song;
 import com.wenxianm.model.param.SongParam;
+import com.wenxianm.model.vo.SongSearchVO;
 
 import java.util.List;
 
@@ -24,6 +25,15 @@ public interface ISongService {
      * @return PageData<SongDto>
      **/
     PageData<SongDto> listSong(SongParam songParam);
+
+    /**
+     * 获取歌曲列表
+     * @param songParam
+     * @author caiwx
+     * @date 2021/11/3 - 16:31
+     * @return List<SongDto>
+     **/
+    List<SongDto> list(SongParam songParam);
 
     /**
      * 获取30条没有mp3的歌曲
@@ -98,4 +108,13 @@ public interface ISongService {
      * @date 2021/10/28 - 10:58
      **/
     void reptileHotSongs(Long artistId);
+
+    /**
+     * 搜索歌曲或者歌手
+     * @param name
+     * @author caiwx
+     * @date 2021/11/3 - 16:28
+     * @return SongSearchVO
+     **/
+    SongSearchVO search(String name);
 }

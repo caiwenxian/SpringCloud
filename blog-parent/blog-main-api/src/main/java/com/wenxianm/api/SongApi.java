@@ -21,7 +21,7 @@ import java.util.List;
  * @Date 2021/9/24 17:34
  **/
 @Component
-@FeignClient(name = "blog-main-service", path = "/song")
+@FeignClient(name = "blog-main-service", path = "/blog/song")
 public interface SongApi {
 
     /**

@@ -14,6 +14,16 @@ public class SongDto {
     /** 名称 */
     private String name;
 
+    /**
+     * 歌手id
+     */
+    private Long artistId;
+
+    /**
+     * 歌手id
+     */
+    private String artistName;
+
     public SongDto() {
     }
 
