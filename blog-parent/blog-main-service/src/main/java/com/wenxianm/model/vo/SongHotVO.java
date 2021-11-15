@@ -1,6 +1,5 @@
-package com.wenxianm.model.dto;
+package com.wenxianm.model.vo;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 
 /**
@@ -9,7 +8,7 @@ import lombok.Data;
  * @Date 2021/9/24 18:16
  **/
 @Data
-public class SongDto {
+public class SongHotVO {
 
     /** 歌曲id */
     private Long songId;
@@ -28,14 +27,16 @@ public class SongDto {
     private String artistName;
 
     /**
-     * mp3Url
+     * 播放次数
      */
-    private String mp3Url;
+    private Integer playTimes;
 
-    public SongDto() {
+
+
+    public SongHotVO() {
     }
 
-    public SongDto(String name) {
+    public SongHotVO(String name) {
         this.name = name;
     }
 }

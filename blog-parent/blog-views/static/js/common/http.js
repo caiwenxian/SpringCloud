@@ -27,15 +27,13 @@ http.get = function (url, data, callback) {
             }
         },
         error: function (result) {
-            if (result.status === 500) {
+            if (result.status != 100) {
                 layui.use('layer', function () {
                     layer.open({
                         title: '信息'
-                        , content: result.responseText
+                        , content: result.responseText == '' ? "服务器错误！" : result.responseText
                     });
                 })
-
-
             }
         }
     });

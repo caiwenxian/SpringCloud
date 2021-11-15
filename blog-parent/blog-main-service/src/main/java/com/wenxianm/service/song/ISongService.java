@@ -5,6 +5,8 @@ import com.wenxianm.model.PageData;
 import com.wenxianm.model.dto.SongDto;
 import com.wenxianm.model.entity.Song;
 import com.wenxianm.model.param.SongParam;
+import com.wenxianm.model.vo.Mp3UrlVO;
+import com.wenxianm.model.vo.SongHotVO;
 import com.wenxianm.model.vo.SongSearchVO;
 
 import java.util.List;
@@ -117,4 +119,28 @@ public interface ISongService {
      * @return SongSearchVO
      **/
     SongSearchVO search(String name);
+
+    /**
+     * 热门歌曲
+     * @author caiwx
+     * @date 2021/11/4 - 17:15
+     * @return List<SongHotVO>
+     **/
+    List<SongHotVO> hotSong();
+
+    /**
+     * 歌曲播放外链
+     * @param songIds
+     * @author caiwx
+     * @date 2021/11/6 - 10:04
+     * @return String
+     **/
+    List<Mp3UrlVO> getMp3(List<Long> songIds);
+
+    /**
+     * 消费等待reptile的数据
+     * @author caiwx
+     * @date 2021/11/11 - 10:58
+     **/
+    void consumerWaitReptile();
 }

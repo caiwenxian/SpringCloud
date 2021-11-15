@@ -30,11 +30,11 @@ public class RedisLockService {
      * @date 2021/10/26 - 18:05
      * @return boolean
      **/
-    public boolean tryLock(String key, String value) {
+    /*public boolean tryLock(String key, String value) {
         return tryLock(key, value, 0L, null);
     }
 
-    /**
+    *//**
      * 指定时间内获取锁，阻塞
      * @param key
      * @param value
@@ -43,12 +43,12 @@ public class RedisLockService {
      * @author caiwx
      * @date 2021/10/26 - 18:07
      * @return boolean
-     **/
+     **//*
     public boolean tryLock(String key, String value, long timeout, TimeUnit unit) {
         return tryLock(key, value, timeout, unit, DEFAULT_SINGLE_EXPIRE_TIME);
     }
 
-    /**
+    *//**
      * 指定时间内获取锁，阻塞
      * @param key
      * @param value

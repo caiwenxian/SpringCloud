@@ -1,5 +1,6 @@
 package com.wenxianm.controller;
 
+import com.google.common.collect.Lists;
 import com.wenxianm.annotation.ApiMethod;
 import com.wenxianm.api.SongApi;
 import com.wenxianm.model.PageData;
@@ -10,6 +11,8 @@ import com.wenxianm.model.enums.MqMessageStatusEnum;
 import com.wenxianm.model.enums.MqMessageTypeEnum;
 import com.wenxianm.model.mq.TopSongMessage;
 import com.wenxianm.model.param.SongParam;
+import com.wenxianm.model.vo.Mp3UrlVO;
+import com.wenxianm.model.vo.SongHotVO;
 import com.wenxianm.model.vo.SongSearchVO;
 import com.wenxianm.mq.MqProducer;
 import com.wenxianm.mq.MqProducerWithoutStream;
@@ -83,6 +86,43 @@ public class SongController implements SongApi{
             return new SongSearchVO();
         }
         return songService.search(name.trim());
+    }
+
+    /**
+     * 获取热门歌曲
+     * @author caiwx
+     * @date 2021/11/4 - 17:24
+     * @return List<SongHotVO>
+     **/
+    @GetMapping("/hot/songs")
+    public List<SongHotVO> hotSong() {
+        return songService.hotSong();
+    }
+
+    /**
+     * 获取mp3播放外链
+     * @param songIds 歌曲id
+     * @author caiwx
+     * @date 2021/11/6 - 9:57
+     * @return String
+     **/
+    @PostMapping("/get/mp3")
+    public List<Mp3UrlVO> getMp3(@RequestBody List<Long> songIds) {
+        return songService.getMp3(songIds);
+    }
+
+    /**
+     * 根据歌手获取歌曲
+     * @param artistId 歌手id
+     * @author caiwx
+     * @date 2021/11/9 - 11:44
+     * @return List<SongDto>
+     **/
+    @GetMapping("/list/artist/song")
+    public List<SongDto> listSongByArtist(Long artistId) {
+        SongParam songParam = new SongParam();
+        songParam.setArtistId(artistId);
+        return songService.list(songParam);
     }
 
     @GetMapping("testMq")

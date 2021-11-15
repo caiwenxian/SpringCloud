@@ -1,6 +1,7 @@
 package com.wenxianm.utils;
 
 import java.util.Date;
+import java.util.Random;
 
 /**
  * id生成器
@@ -50,6 +51,22 @@ public class IDUtil {
         stringBuffer.append(DateUtil.get(new Date(), DateUtil.Field.MONTH));
         stringBuffer.append(id);
         return stringBuffer.toString();
+    }
+
+    /**
+     * 返回范围内随机数
+     * @param min
+     * @param max
+     * @author caiwx
+     * @date 2021/11/4 - 17:53
+     * @return Integer
+     **/
+    public static Integer randomInRange(Integer min, Integer max) {
+        if (min >= max) {
+            throw new IllegalArgumentException("max must be greater than min");
+        }
+        Random r = new Random();
+        return r.nextInt((max - min) + 1) + min;
     }
 
 

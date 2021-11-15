@@ -13,7 +13,6 @@ import com.wenxianm.model.mq.TopSongMessage;
 import com.wenxianm.mq.MySink;
 import com.wenxianm.service.RedisService;
 import com.wenxianm.utils.JsonUtil;
-import com.wenxianm.utils.RedisUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.stream.annotation.StreamListener;

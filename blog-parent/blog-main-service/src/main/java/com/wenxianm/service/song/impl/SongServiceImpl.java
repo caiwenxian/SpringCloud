@@ -7,6 +7,8 @@ import com.google.common.collect.Lists;
 import com.wenxianm.model.entity.MqMessage;
 import com.wenxianm.model.enums.*;
 import com.wenxianm.model.param.ArtistParam;
+import com.wenxianm.model.vo.Mp3UrlVO;
+import com.wenxianm.model.vo.SongHotVO;
 import com.wenxianm.model.vo.SongSearchVO;
 import com.wenxianm.mq.MqProducer;
 import com.wenxianm.dao.song.ISongDao;
@@ -21,6 +23,7 @@ import com.wenxianm.model.entity.Song;
 import com.wenxianm.model.mq.TopSongMessage;
 import com.wenxianm.model.param.SongParam;
 import com.wenxianm.mq.MqProducerWithoutStream;
+import com.wenxianm.service.RedisQueueService;
 import com.wenxianm.service.mq.IMqMessageService;
 import com.wenxianm.service.song.IArtistService;
 import com.wenxianm.service.song.ISongService;
@@ -42,6 +45,7 @@ import tk.mybatis.mapper.entity.Example;
 
 import java.io.UnsupportedEncodingException;
 import java.util.*;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.stream.Collectors;
 
 /**
@@ -67,6 +71,10 @@ public class SongServiceImpl implements ISongService {
     private MqProducerWithoutStream mqProducer;
     @Autowired
     private IMqMessageService mqMessageService;
+    @Autowired
+    private ThreadPoolExecutor threadPoolExecutor;
+    @Autowired
+    private RedisQueueService redisQueueService;
 
     @Override
     public PageData<SongDto> listSong(SongParam songParam) {
@@ -88,8 +96,15 @@ public class SongServiceImpl implements ISongService {
     public List<SongDto> list(SongParam songParam) {
         Example example = new Example(Song.class);
         Example.Criteria criteria = example.createCriteria();
-        criteria.andLike(PojoUtil.field(Song::getName), "%" + songParam.getName() + "%");
-        List<Song> songs = songDao.selectByExample(example);
+        if (!StringUtils.isEmpty(songParam.getName())) {
+            criteria.andLike(PojoUtil.field(Song::getName), "%" + songParam.getName() + "%");
+        }
+        if (Objects.nonNull(songParam.getArtistId())) {
+            criteria.andEqualTo(PojoUtil.field(Song::getArtistId), songParam.getArtistId());
+        }
+        example.setOrderByClause("num asc");
+        RowBounds rowBounds = new RowBounds(Constants.ZERO, Constants.FIVE_HUNDRED);
+        List<Song> songs = songDao.selectByExampleAndRowBounds(example, rowBounds);
         if (CollectionUtils.isEmpty(songs)) {
             return Lists.newArrayList();
         }
@@ -114,6 +129,10 @@ public class SongServiceImpl implements ISongService {
                     log.error("歌曲id不可为空");
                     throw new BaseException(ServerCode.WRONG_PARAM, "歌曲id不可为空");
                 }
+                if (song.getName().indexOf("DJ") > 0 || song.getName().indexOf("dj") > 0) {
+                    log.info("过滤歌曲：{}", song);
+                    return;
+                }
                 if (this.getBySongId(song.getSongId()) != null) {
                     return;
                 }
@@ -132,16 +151,14 @@ public class SongServiceImpl implements ISongService {
     @Transactional(rollbackFor = Exception.class)
     public void updateSong(Song song) {
         try {
-            synchronized (this) {
-                if (Objects.isNull(song.getSongId())) {
-                    log.warn("歌曲id不能为空");
-                    return;
-                }
-                song.setModifyTime(new Date());
-                Example example = new Example(Song.class);
-                example.createCriteria().andEqualTo(PojoUtil.field(Song::getSongId), song.getSongId());
-                songDao.updateByExampleSelective(song, example);
+            if (Objects.isNull(song.getSongId())) {
+                log.warn("歌曲id不能为空");
+                return;
             }
+            song.setModifyTime(new Date());
+            Example example = new Example(Song.class);
+            example.createCriteria().andEqualTo(PojoUtil.field(Song::getSongId), song.getSongId());
+            songDao.updateByExampleSelective(song, example);
         } catch (Exception e) {
             log.error("更新歌曲出错: ", e);
             throw new BaseException(ServerCode.ERROR, "更新歌曲出错");
@@ -244,7 +261,7 @@ public class SongServiceImpl implements ISongService {
             Song songEntity = new Song();
             songEntity.setSongId(songId);
             songEntity.setMp3Url(StringUtils.isEmpty(map3Url) ? "-1" : map3Url);
-            this.updateSong(songEntity);
+            songService.updateSong(songEntity);
         });
         log.info("reptile mp3url完成");
     }
@@ -285,8 +302,12 @@ public class SongServiceImpl implements ISongService {
             // 获取其他排行榜
             if (CollectionUtils.isEmpty(topUrls)) {
                 Elements topElements = document.select("a[href^=/discover]");
-                topUrls = topElements.stream().map(v -> v.attr("href")).distinct().collect(Collectors.toList());
-                topUrls.remove(0);
+                topUrls = topElements.stream().map(v -> v.attr("href"))
+                        .filter(v -> {
+                            String id = v.split("=")[1];
+                            return TopListTypeEnum.isMainTop(id);
+                        })
+                        .distinct().collect(Collectors.toList());
                 int index = 1;
                 for (String url : topUrls) {
                     // 推送到mq
@@ -363,6 +384,10 @@ public class SongServiceImpl implements ISongService {
             Integer code = jsonObject.getInteger("code");
             if (!Objects.equals(code, Constants.TWO_HUNDRED)) {
                 log.info("reptile返回code不是200");
+                Artist artist = new Artist();
+                artist.setArtistId(artistId);
+                artist.setReptileHotSong(Constants.NEGATIVE_ONE);
+                artistService.updateOne(artist);
                 return;
             }
             JSONArray songs = jsonObject.getJSONArray("hotSongs");
@@ -376,8 +401,11 @@ public class SongServiceImpl implements ISongService {
                 this.addSong(entity);
                 num++;
             }
+            JSONObject artistObj = jsonObject.getJSONObject("artist");
+            String phone = artistObj.getString("picUrl");
             Artist artist = new Artist();
             artist.setArtistId(artistId);
+            artist.setPhoto(phone);
             artist.setReptileHotSong(Constants.ONE);
             artistService.updateOne(artist);
         } catch (Exception e) {
@@ -389,13 +417,64 @@ public class SongServiceImpl implements ISongService {
     @Override
     public SongSearchVO search(String name) {
         List<SongDto> songs = this.list(new SongParam(name));
+        List<ArtistDto> artists = artistService.list(new ArtistParam(name));
+        if (!CollectionUtils.isEmpty(artists)) {
+            SongParam songParam = new SongParam();
+            songParam.setArtistId(artists.get(0).getArtistId());
+            List<SongDto> list = this.list(songParam);
+            songs.addAll(list);
+        }
         songs.forEach(v -> {
             ArtistDto artist = artistService.getByArtistId(v.getArtistId());
             if (Objects.nonNull(artist)) {
                 v.setArtistName(artist.getName());
             }
         });
-        List<ArtistDto> artists = artistService.list(new ArtistParam(name));
+        if (CollectionUtils.isEmpty(songs)) {
+//            threadPoolExecutor.execute(() -> reptileSong(name));
+            // 将搜索关键词push到队列
+            redisQueueService.lPush(Constants.REPTILE_SONG, name);
+        }
         return new SongSearchVO(songs, artists);
+    }
+
+    @Override
+    public List<SongHotVO> hotSong() {
+        SongParam songParam = new SongParam();
+        songParam.setPageIndex(1);
+        songParam.setPageSize(20);
+        PageData<SongDto> pageData = this.listSong(songParam);
+        List<SongDto> list = pageData.getList();
+        List<SongHotVO> songHotVOS = BeanUtil.fromList(list, SongHotVO.class);
+        songHotVOS.forEach(v -> {
+            ArtistDto artist = artistService.getByArtistId(v.getArtistId());
+            if (Objects.nonNull(artist)) {
+                v.setArtistName(artist.getName());
+            }
+            v.setPlayTimes(IDUtil.randomInRange(1, 100));
+        });
+        return songHotVOS;
+    }
+
+    @Override
+    public List<Mp3UrlVO> getMp3(List<Long> songIds) {
+        List<Mp3UrlVO> list = new ArrayList<>();
+        reptileMp3Url(songIds);
+        for (Long songId : songIds) {
+            String url = String.format(Constants.WANG_YI_SONG_MP3_URL, songId);
+            SongDto song = this.getBySongId(songId);
+            if (StringUtils.isEmpty(song.getMp3Url()) || song.getMp3Url().equals(Constants.STR_NEGATIVE_ONE)) {
+                continue;
+            }
+            list.add(new Mp3UrlVO(songId, url));
+        }
+        return list;
+    }
+
+    @Override
+    public void consumerWaitReptile() {
+        redisQueueService.bRPopLPush(Constants.REPTILE_SONG, (value) -> {
+            songService.reptileSong(value);
+        });
     }
 }

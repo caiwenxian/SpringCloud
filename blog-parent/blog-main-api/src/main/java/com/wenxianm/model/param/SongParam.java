@@ -16,4 +16,14 @@ public class SongParam extends Page {
 
     /** 名称 */
     private String name;
+
+    /** 歌手id */
+    private Long artistId;
+
+    public SongParam() {
+    }
+
+    public SongParam(String name) {
+        this.name = name;
+    }
 }

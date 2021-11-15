@@ -35,6 +35,11 @@ public class Artist extends BaseEntity {
      */
     private Integer reptileHotSong;
 
+    /**
+     * 头像
+     */
+    private String photo;
+
     public Artist() {
     }
 

@@ -9,6 +9,8 @@ import com.wenxianm.utils.IDUtil;
  **/
 public class Constants {
 
+    public static final Integer NEGATIVE_ONE = -1;
+
     public static final Integer ZERO = 0;
 
     public static final Integer ONE = 1;
@@ -17,9 +19,13 @@ public class Constants {
 
     public static final Integer TWO_HUNDRED = 200;
 
+    public static final Integer FIVE_HUNDRED = 200;
+
     public static final Integer THIRTY = 30;
 
     public static final Long ZERO_L = 0L;
+
+    public static final String STR_NEGATIVE_ONE = "-1";
 
     public static final String WANG_YI_API = "http://music.163.com";
 
@@ -29,11 +35,19 @@ public class Constants {
 
     public static final String WANG_YI_HOT_SONG = "/api/artist/";
 
+    public static String WANG_YI_SONG_MP3_URL = "http://music.163.com/song/media/outer/url?id=%s.mp3";
+
     public static final String ROCKET_MQ_MESSAGE_ID = "rocketmq_MESSAGE_ID";
 
     public static final String MQ_LOCK = "mq_lock_";
 
     public static final String MQ = "MQ";
+
+    public static final String REDIS_QUEUE = "redis_queue_";
+
+    public static final String REDIS_QUEUE_BACKUP = "redis_queue_backup_";
+
+    public static final String REPTILE_SONG = "reptile_song";
 
 
 

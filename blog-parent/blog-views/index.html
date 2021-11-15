@@ -7,6 +7,10 @@
     <title>home</title>
     <script src="/blog-views/static/plugins/vue/vue.min.js"></script>
     <script src="/blog-views/static/plugins/vue/vue-router.js"></script>
+    <script src="/blog-views/static/plugins/jquery/jquery.min.js"></script>
+    <script src="/blog-views/static/js/index.js"></script>
+    <link rel='stylesheet' href="/blog-views/static/css/index.css"></style>
+    <link rel='stylesheet' href="/blog-views/static/css/common.css"></style>
 </head>
 <style>
     #left {
@@ -81,8 +85,156 @@
     </div>
 
 </div>
+<!--<div class="cube" onclick="stop()">
+    <div class="front">front</div>
+    <div class="back">back</div>
+    <div class="left">left</div>
+    <div class="right">right</div>
+    <div class="top">top</div>
+    <div class="bottom">bottom</div>
+</div>-->
+<div id="skPlayer" style="position: fixed; right: 0px; bottom: 0px; display: none;"></div>
+
+<div class="demo none">
+    <p><strong>自制音乐播放器</strong></p>
+    <div id="player1">
+            <pre class="aplayer-lrc-content">
+                [00:00.00] 作曲 : 林一峰
+                [00:01.00] 作词 : 易家扬
+                [00:24.898]听见 冬天的离开
+                [00:29.697]我在某年某月 醒过来
+                [00:34.768]我想 我等 我期待
+                [00:40.598]未来却不能因此安排
+                [00:53.398]阴天 傍晚 车窗外
+                [00:58.758]未来有一个人在等待
+                [01:04.298]向左向右向前看
+                [01:09.599]爱要拐几个弯才来
+                [01:14.369]我遇见谁 会有怎样的对白
+                [01:19.638]我等的人 他在多远的未来
+                [01:24.839]我听见风来自地铁和人海
+                [01:30.399]我排着队 拿着爱的号码牌
+                [01:56.388]阴天 傍晚 车窗外
+                [02:02.298]未来有一个人在等待
+                [02:06.650]向左向右向前看
+                [02:12.000]爱要拐几个弯才来
+                [02:16.980]我遇见谁 会有怎样的对白
+                [02:22.289]我等的人 他在多远的未来
+                [02:27.989]我听见风来自地铁和人海
+                [02:32.688]我排着队 拿着爱的号码牌
+                [02:43.380]我往前飞 飞过一片时间海
+                [02:48.298]我们也曾在爱情里受伤害
+                [02:53.689]我看着路 梦的入口有点窄
+                [02:58.748]我遇见你是最美丽的意外
+                [03:05.888]总有一天 我的谜底会揭开
+            </pre>
+    </div>
+</div>
+
 </body>
-<script type="module"> import Vue from 'https://cdn.jsdelivr.net/npm/vue@2.6.11/dist/vue.esm.browser.js'</script>
+
+<link href="https://cdn.bootcss.com/aplayer/1.10.1/APlayer.min.css" rel="stylesheet">
+<script src="https://cdn.bootcss.com/aplayer/1.10.1/APlayer.min.js"></script>
+<style>
+    .demo{width:360px;margin:60px auto 10px auto}
+    .demo p{padding:10px 0}
+</style>
+<script>
+    var ap = new APlayer({
+        element: document.getElementById('player1'),
+        narrow: false,
+        autoplay: true,
+        showlrc: true,
+        music: {
+            title: '遇见',
+            author: '孙燕姿',
+            url: 'http://music.163.com/song/media/outer/url?id=329925.mp3',
+            pic: 'http://y.gtimg.cn/music/photo_new/T002R300x300M000002ehzTm0TxXC2.jpg'
+        }
+    });
+
+    ap.init();
+</script>
+
+
+
+
+<script src="/blog-views/static/plugins/skPlayer/skPlayer.min.js"></script>
+<script>
+    // 引音乐播放器相关
+    var player;
+    function initMusic(songPlayList) {
+        player = new skPlayer({
+            autoplay: true,
+            music: {
+                type: 'file',
+                source: songPlayList
+            }
+        });
+        // 调整音量
+        var musicVoice = window.localStorage.getItem('blog.musicVoice')
+        musicVoice = musicVoice == null ? 50 : musicVoice;
+        $('.skPlayer-line').css("width", musicVoice + "%");
+        setTimeout(function() {
+            var o = player.dom.volumeline_value.clientWidth / player.dom.volumeline_total.clientWidth;
+            player.audio.volume = o;
+            player.audio.muted && player.toggleMute()
+        }, 100);
+        // 监听音量变化
+        player.dom.volumeline_value = document.querySelector(".skPlayer-volume .skPlayer-line");
+        player.dom.volumeline_total.addEventListener("click", function (e) {
+            console.log("change voice: ", e)
+            var percent = (e.clientX - leftDistance(player.dom.volumeline_total)) / player.dom.volumeline_total.clientWidth;
+            percent = (100 * percent).toFixed(2);
+            window.localStorage.setItem('blog.musicVoice', percent);
+        })
+        $('#skPlayer').show();
+    }
+
+    /**
+     * 添加歌曲到播放列表，并播放当前歌曲
+     * @param song
+     * @param index
+     */
+    function addSong(song, index) {
+        player.music.push(song);
+        var html = "<li data-index='"+ index + "'>\n" +
+            "                    <i class=\"skPlayer-list-sign\"></i>\n" +
+            "                    <span class=\"skPlayer-list-index\">"+ (index + 1) +"</span>\n" +
+            "                    <span class=\"skPlayer-list-name\" title='"+ song.name +"'>"+ song.name +"</span>\n" +
+            "                    <span class=\"skPlayer-list-author\" title='"+ song.author +"'>"+ song.author +"</span>\n" +
+            "                </li>"
+        $('.skPlayer-list').append(html);
+        player.dom.musicitem = document.querySelectorAll(".skPlayer-list li");
+        player.switchMusic(player.music.length);
+        console.log("player:", player)
+    }
+
+    function addSongList(songs) {
+        player.music = songs;
+        let html = "";
+        for (let i = 0; i < songs.length; i ++) {
+            let song = songs[i];
+            html += "<li data-index='"+ i + "'>\n" +
+                "                    <i class=\"skPlayer-list-sign\"></i>\n" +
+                "                    <span class=\"skPlayer-list-index\">"+ (i + 1) +"</span>\n" +
+                "                    <span class=\"skPlayer-list-name\" title='"+ song.name +"'>"+ song.name +"</span>\n" +
+                "                    <span class=\"skPlayer-list-author\" title='"+ song.author +"'>"+ song.author +"</span>\n" +
+                "                </li>"
+        }
+        $('.skPlayer-list').append(html);
+        player.dom.musicitem = document.querySelectorAll(".skPlayer-list li");
+        player.switchMusic(1);
+        console.log("player:", player)
+    }
+
+    function leftDistance(t) {
+        for (var e = t.offsetLeft, n = void 0; t.offsetParent;) t = t.offsetParent, e += t.offsetLeft;
+        return n = document.body.scrollLeft + document.documentElement.scrollLeft, e - n
+    }
+
+
+</script>
+
 <script type="module">
     const music = { template: '<iframe src="/blog-views/music-search.html" frameborder="0" class="pc iframe"  scrolling="auto"></iframe>' }
     const com2 = { template: '<div>路由2</div>' }
@@ -96,17 +248,32 @@
         routes
     })
 
-    const app = new Vue({
+    var app = new Vue({
         router,
         data: {
-            menu_current: "music"
+            menu_current: "music",
+            songPlayList: []
         },
         methods: {
             chooseMenu: function(menuName) {
                 app.menu_current = menuName;
             }
+        },
+        computed: {
+            playList: function () {
+                return this.songPlayList;
+            },
+        },
+        watch: {
+            playList: function () {
+                initMusic();
+            },
         }
     }).$mount('#app');
 
+</script>
+
+<script>
+    // cu.init();
 </script>
 </html>

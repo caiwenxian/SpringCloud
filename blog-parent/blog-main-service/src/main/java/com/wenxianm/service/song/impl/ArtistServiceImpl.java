@@ -65,6 +65,10 @@ public class ArtistServiceImpl implements IArtistService {
 
     @Override
     public void updateOne(Artist artist) {
+        if (Objects.isNull(artist.getArtistId())) {
+            log.info("歌手id不可为空");
+            return;
+        }
         artist.setModifyTime(new Date());
         Example example = new Example(Artist.class);
         Example.Criteria criteria = example.createCriteria();
@@ -111,6 +115,7 @@ public class ArtistServiceImpl implements IArtistService {
         Example example = new Example(Artist.class);
         Example.Criteria criteria = example.createCriteria();
         criteria.andEqualTo(PojoUtil.field(Artist::getReptileHotSong), Constants.ZERO);
+        example.setOrderByClause("name desc");
         RowBounds rowBounds = new RowBounds(Constants.ZERO, Constants.FIVE);
         List<Artist> artists = artistDao.selectByExampleAndRowBounds(example, rowBounds);
         if (CollectionUtils.isEmpty(artists)) {

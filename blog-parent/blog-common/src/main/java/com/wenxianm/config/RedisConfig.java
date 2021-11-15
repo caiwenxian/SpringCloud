@@ -10,6 +10,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.JdkSerializationRedisSerializer;
@@ -33,8 +34,11 @@ public class RedisConfig implements InitializingBean {
         log.info("连接redis成功，host:{}",redisHost);
     }
 
+//    @Autowired
+//    private LettuceConnectionFactory lettuceConnectionFactory;
+
     @Autowired
-    private LettuceConnectionFactory lettuceConnectionFactory;
+    private RedisConnectionFactory redisConnectionFactory;
 
     @Autowired
     private RedisTemplate<String, String> stringRedisTemplate;
@@ -43,7 +47,7 @@ public class RedisConfig implements InitializingBean {
     @ConditionalOnMissingBean
     public RedisTemplate jdkRedisTemplate() {
         RedisTemplate redisTemplate = new RedisTemplate();
-        redisTemplate.setConnectionFactory(lettuceConnectionFactory);
+        redisTemplate.setConnectionFactory(redisConnectionFactory);
         redisTemplate.setKeySerializer(new StringRedisSerializer());
         redisTemplate.setValueSerializer(new JdkSerializationRedisSerializer());
         return redisTemplate;

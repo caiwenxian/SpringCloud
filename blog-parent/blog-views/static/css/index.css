@@ -1,0 +1,65 @@
+.cube {
+    width: 400px;
+    height: 400px;
+    transition: all 3s;
+    margin: 300px auto;
+    /* 作用于所有3d转换的子元素 设置给父级 */
+    /* perspective: 1000px; */
+    /* transform: rotateX(30deg) rotateY(45deg); */
+    /* 平面到立方  默认值:平面flat*/
+    transform-style: preserve-3d;
+
+    position: relative;
+}
+
+.front,
+.back,
+.left,
+.right,
+.top,
+.bottom {
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    line-height: 400px;
+    position: absolute;
+    opacity: 0.9;
+    left: 0;
+    top: 0;
+}
+
+.front {
+    background-color: palevioletred;
+    background-image: url('http://img1.gtimg.com/tj/pics/hv1/117/208/2153/140051982.jpg');
+    transform: translateZ(200px);
+}
+
+.back {
+    background-color: yellow;
+    transform: translateZ(-200px);
+    background-image: url('https://ss1.bdstatic.com/70cFuXSh_Q1YnxGkpoWK1HF6hhy/it/u=841408372,3004217725&fm=11&gp=0.jpg');
+}
+
+.left {
+    background-color: pink;
+    background-image: url('https://ss0.bdstatic.com/70cFuHSh_Q1YnxGkpoWK1HF6hhy/it/u=2388632836,3966607624&fm=26&gp=0.jpg');
+    transform: rotateY(90deg) translateZ(-200px)
+}
+
+.right {
+    background-color: yellowgreen;
+    background-image: url('https://ss0.bdstatic.com/70cFuHSh_Q1YnxGkpoWK1HF6hhy/it/u=192610795,467565159&fm=26&gp=0.jpg');
+    transform: rotateY(90deg) translateZ(200px)
+}
+
+.top {
+    background-color: skyblue;
+    background-image: url("https://ss0.bdstatic.com/70cFuHSh_Q1YnxGkpoWK1HF6hhy/it/u=2936477803,4198185787&fm=15&gp=0.jpg");
+    transform: rotateX(90deg) translateZ(200px)
+}
+
+.bottom {
+    background-color: orange;
+    background-image: url('http://img0.pclady.com.cn/pclady/1611/02/1612285_jyz.jpg');
+    transform: rotateX(90deg) translateZ(-200px)
+}

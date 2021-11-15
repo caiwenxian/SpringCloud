@@ -26,14 +26,17 @@
     #music-search input {
         width: 90%;
         line-height: 30px;
-        border: 1px solid darkgreen;
+        border: 1px solid #787575;
         border-radius: 3px;
         outline:none;
         padding-left: 5px;
     }
+    #music-search input:focus {
+        border: 2px solid #345c20;
+    }
     #music-search img {
         vertical-align: middle;
-        width: 40px;
+        width: 20px;
         opacity: 0.8;
         cursor: pointer;
     }
@@ -61,7 +64,7 @@
         white-space: nowrap;
         cursor: pointer;
         margin-top: 0px !important;
-        width: 200px;
+        width: 280px;
         display: inline-block;
     }
     .hot-song-content div:hover {
@@ -74,8 +77,11 @@
     }
     .hot-song-content div .song-name{
         margin-right: 0px;
-        width: 180px;
+        width: 260px;
         display: inline-block;
+        overflow:hidden;
+        text-overflow:ellipsis;
+        vertical-align: middle;
     }
     #song-result-item, #artist-result-item {
         line-height: 25px;
@@ -98,14 +104,17 @@
     }
 </style>
 <body style="background-color: white">
-    <div id="music">
+    <div id="music" v-cloak>
         <div id="music-search">
             <div>
                 <p class="search-title">搜索</p>
             </div>
             <div>
                 <input id="search-key" type="text" placeholder="开始搜索" v-model="searchKey">
-                <img src="/blog-views/static/images/clear.png" v-on:click="reset()">
+                <div style="display: inline-block; border: 1px solid #787575; padding: 5px; cursor: pointer" v-on:click="reset()">
+                    <img src="/blog-views/static/images/clear_v3.png">
+                </div>
+
             </div>
         </div>
         <div id="default" v-bind:class="{none: showWhat == 'searchResult'}">
@@ -114,7 +123,7 @@
                     <p class="search-history-title">历史搜索</p>
                 </div>
                 <div class="search-history-content">
-                    <span v-for="(v, index) in 20">邓紫棋</span>
+                    <span v-for="(item, index) in searchRecord" v-on:click="searchSong(item)">{{item}}</span>
                 </div>
             </div>
             <div id="music-search-hot">
@@ -122,9 +131,9 @@
                     <p class="hot-song-title">热门歌曲</p>
                 </div>
                 <div class="hot-song-content">
-                    <div v-for="(v, index) in 20">
-                        <span class="song-name">手心的蔷薇</span>
-                        <span class="times">99</span>
+                    <div v-for="(item, index) in hotSongs" v-on:click="playSong(item)">
+                        <span class="song-name">{{item.name + '-' + item.artistName}}</span>
+                        <span class="times">{{item.playTimes}}</span>
                     </div>
                 </div>
             </div>
@@ -133,7 +142,7 @@
             <div id="song-result">
                 <p class="hot-song-title">单曲</p>
                 <div id="song-result-div">
-                    <div id="song-result-item" v-for="(item, index) in searchResultSongs">
+                    <div id="song-result-item" v-for="(item, index) in searchResultSongs" v-on:click="playSong(item)">
                         <span class="song-name">{{item.name}}-{{item.artistName}}</span>
                     </div>
                 </div>
@@ -141,7 +150,7 @@
             <div id="artist-result">
                 <p class="hot-song-title">歌手</p>
                 <div id="artist-result-div">
-                    <div id="artist-result-item" v-for="(item, index) in searchResultArtists">
+                    <div id="artist-result-item" v-for="(item, index) in searchResultArtists" v-on:click="playArtistSong(item)">
                         <span class="artist-name">{{item.name}}</span>
                     </div>
                 </div>
@@ -159,9 +168,15 @@
     document.querySelector('#search-key').addEventListener('compositionend', function (e) {
         isInputZh = false;
         search.vm.searchSong();
+        search.vm.saveSearchRecord();
     }, false);
     document.querySelector('#search-key').addEventListener('input', function (e) {
         if (isInputZh) return;
         search.vm.searchSong();
     }, false);
+    search.init();
+
+    layui.use(['layer'], function () {
+        var layer = layui.layer;
+    });
 </script>

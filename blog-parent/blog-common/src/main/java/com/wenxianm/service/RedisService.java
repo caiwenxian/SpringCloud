@@ -1,17 +1,19 @@
 package com.wenxianm.service;
 
 import com.google.common.primitives.Primitives;
-import io.lettuce.core.SetArgs;
-import io.lettuce.core.api.async.RedisAsyncCommands;
-import io.lettuce.core.cluster.api.async.RedisAdvancedClusterAsyncCommands;
+//import io.lettuce.core.SetArgs;
+//import io.lettuce.core.api.async.RedisAsyncCommands;
+//import io.lettuce.core.cluster.api.async.RedisAdvancedClusterAsyncCommands;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.connection.jedis.JedisConnection;
 import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
+import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.concurrent.TimeUnit;
 
@@ -86,21 +88,19 @@ public class RedisService {
                 byte[] keyByte = stringRedisSerializer.serialize(key);
                 byte[] valueByte = stringRedisSerializer.serialize(value);
                 // lettuce连接包下 redis 单机模式setnx
-                if (nativeConnection instanceof RedisAsyncCommands) {
+                /*if (nativeConnection instanceof RedisAsyncCommands) {
                     RedisAsyncCommands commands = (RedisAsyncCommands) nativeConnection;
                     //同步方法执行、setnx禁止异步
                     redisResult = commands
                             .getStatefulConnection()
                             .sync()
                             .set(keyByte, valueByte, SetArgs.Builder.nx().px(expire));
-                }
-                // lettuce连接包下 redis 集群模式setnx
-                if (nativeConnection instanceof RedisAdvancedClusterAsyncCommands) {
-                    RedisAdvancedClusterAsyncCommands clusterAsyncCommands = (RedisAdvancedClusterAsyncCommands) nativeConnection;
+                }*/
+                if (nativeConnection instanceof JedisConnection) {
+                    JedisConnection clusterAsyncCommands = (JedisConnection) nativeConnection;
                     redisResult = clusterAsyncCommands
-                            .getStatefulConnection()
-                            .sync()
-                            .set(keyByte, keyByte, SetArgs.Builder.nx().px(expire));
+                            .getNativeConnection()
+                            .set(keyByte, valueByte, "NX".getBytes(), "PX".getBytes(), expire);
                 }
                 //返回加锁结果
                 return "OK".equalsIgnoreCase(redisResult);
@@ -123,21 +123,19 @@ public class RedisService {
                 byte[] keyByte = stringRedisSerializer.serialize(key);
                 byte[] valueByte = stringRedisSerializer.serialize(value);
                 // lettuce连接包下 redis 单机模式setnx
-                if (nativeConnection instanceof RedisAsyncCommands) {
+                /*if (nativeConnection instanceof RedisAsyncCommands) {
                     RedisAsyncCommands commands = (RedisAsyncCommands) nativeConnection;
                     //同步方法执行、setnx禁止异步
                     redisResult = commands
                             .getStatefulConnection()
                             .sync()
                             .set(keyByte, valueByte, SetArgs.Builder.nx().ex(expire));
-                }
-                // lettuce连接包下 redis 集群模式setnx
-                if (nativeConnection instanceof RedisAdvancedClusterAsyncCommands) {
-                    RedisAdvancedClusterAsyncCommands clusterAsyncCommands = (RedisAdvancedClusterAsyncCommands) nativeConnection;
+                }*/
+                if (nativeConnection instanceof JedisConnection) {
+                    JedisConnection clusterAsyncCommands = (JedisConnection) nativeConnection;
                     redisResult = clusterAsyncCommands
-                            .getStatefulConnection()
-                            .sync()
-                            .set(keyByte, keyByte, SetArgs.Builder.nx().ex(expire));
+                            .getNativeConnection()
+                            .set(keyByte, valueByte, "NX".getBytes(), "EX".getBytes(), expire);
                 }
                 //返回加锁结果
                 return "OK".equalsIgnoreCase(redisResult);
