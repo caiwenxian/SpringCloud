@@ -1,7 +1,7 @@
 package com.wenxianm.service.mq.impl;
 
 import com.google.common.collect.Lists;
-import com.wenxianm.dao.mq.IMqMessageDao;
+import com.wenxianm.dao.IMqMessageDao;
 import com.wenxianm.exception.BaseException;
 import com.wenxianm.model.PageData;
 import com.wenxianm.model.ServerCode;
@@ -12,7 +12,6 @@ import com.wenxianm.service.mq.IMqMessageService;
 import com.wenxianm.utils.BeanUtil;
 import com.wenxianm.utils.IDUtil;
 import com.wenxianm.utils.PojoUtil;
-import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.session.RowBounds;
 import org.springframework.beans.factory.annotation.Autowired;

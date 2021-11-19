@@ -3,6 +3,7 @@ package com.wenxianm.model.entity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
+import javax.persistence.Column;
 import javax.persistence.Table;
 
 /**
@@ -19,6 +20,7 @@ public class Song extends BaseEntity {
     /**
      * 歌曲id
      */
+    @Column(name = "song_id")
     private Long songId;
 
     /**
@@ -29,16 +31,19 @@ public class Song extends BaseEntity {
     /**
      * 歌手id
      */
+    @Column(name = "artist_id")
     private Long artistId;
 
     /**
      * 歌词id
      */
+    @Column(name = "lyric_id")
     private String lyricId;
 
     /**
      * map3Url
      */
+    @Column(name = "mp3_url")
     private String mp3Url;
 
     /**

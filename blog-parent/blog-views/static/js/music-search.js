@@ -9,6 +9,7 @@ search.vm = new Vue({
     data: {
         searchResultSongs: [],
         searchResultArtists: [],
+        searchResultSongTotal: 0,
         searchKey: null,
         showWhat: 'default',
         searchRecord: [],
@@ -23,11 +24,12 @@ search.vm = new Vue({
                 return;
             }
             var url = "/blog/song/search";
-            http.get(url, {name: search.vm.searchKey}, function (result) {
+            http.get(url, {searchKey: search.vm.searchKey}, function (result) {
                 search.vm.showWhat = 'searchResult';
                 if (result.data) {
-                    search.vm.searchResultSongs = result.data.songs ? result.data.songs : [];
+                    search.vm.searchResultSongs = result.data.songs.list ? result.data.songs.list : [];
                     search.vm.searchResultArtists = result.data.artists ? result.data.artists : [];
+                    search.vm.searchResultSongTotal = result.data.songs.page.totalItem;
                 }
             });
         },
@@ -99,46 +101,46 @@ search.vm = new Vue({
                 for (let i = 0; i < result.data.length; i ++) {
                     songIds.push(result.data[i].songId);
                 }
-                let mp3Urls = search.vm.getMp3Url(songIds);
-                var songPlays = [];
-                for (let i = 0; i < result.data.length; i ++) {
-                    let mp3Url = null;
-                    for (const [index, val] of mp3Urls.entries()) {
-                        if (result.data[i].songId == val.songId) {
-                            mp3Url = val.mp3Url;
-                            break;
+                search.vm.getMp3Url(songIds, function (mp3Urls) {
+                    var songPlays = [];
+                    for (let i = 0; i < result.data.length; i ++) {
+                        let mp3Url = null;
+                        for (const [index, val] of mp3Urls.entries()) {
+                            if (result.data[i].songId == val.songId) {
+                                mp3Url = val.mp3Url;
+                                break;
+                            }
                         }
+                        if (!mp3Url) {
+                            continue;
+                        }
+                        let song = result.data[i];
+                        var obj = {
+                            name: song.name,
+                            author: song.artistName,
+                            src: mp3Url,
+                            cover: '/blog-views/static/images/music.png'
+                        }
+                        songPlays.unshift(obj)
                     }
-                    if (!mp3Url) {
-                        continue;
+                    if (search.vm.currentSong == null) {
+                        parent.window.initMusic(songPlays);
+                    } else {
+                        parent.window.addSongList(songPlays);
                     }
-                    let song = result.data[i];
-                    var obj = {
-                        name: song.name,
-                        author: song.artistName,
-                        src: mp3Url,
-                        cover: '/blog-views/static/images/music.png'
-                    }
-                    songPlays.unshift(obj)
-                }
-                if (search.vm.currentSong == null) {
-                    parent.window.initMusic(songPlays);
-                } else {
-                    parent.window.addSongList(songPlays);
-                }
-                search.vm.currentSong = songPlays[0].songId;
-                search.vm.currentSongIndex ++;
-
+                    search.vm.currentSong = songPlays[0].songId;
+                    search.vm.currentSongIndex ++;
+                });
             });
         },
-        getMp3Url: function (songIds) {
+        getMp3Url: function (songIds, callback) {
             let url = "/blog/song/get/mp3";
             let data = {
                 songIds: songIds
             }
-            http.get(url, data, function (result) {
-                return result.data
-            });
+            http.post(url, JSON.stringify(data), function (result) {
+                callback(result.data);
+            }, http.CONTENT_TYPE_ONE);
         }
     }
 });

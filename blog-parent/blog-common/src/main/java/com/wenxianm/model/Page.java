@@ -35,4 +35,12 @@ public class Page implements Serializable {
         return this.pageSize;
     }
 
+    public Page() {
+    }
+
+    public Page(Page page) {
+        this.pageIndex = page.getPageIndex();
+        this.pageSize = page.getPageSize();
+        this.totalItem = page.getTotalItem();
+    }
 }

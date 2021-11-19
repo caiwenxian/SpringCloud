@@ -1,5 +1,46 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.wenxianm.dao.song.ISongDao"  >
+<mapper namespace="com.wenxianm.dao.ISongDao">
 
+    <select id="countSearch" resultType="java.lang.Integer">
+        select sum(num)
+        from (
+                 select count(1) as num
+                 from t_song t1
+                 where name like concat('%', #{songSearchParam.searchKey}, '%')
+                 union
+                 select count(1) as num
+                 from t_song t2
+                 where artist_id = #{songSearchParam.artistId}
+             ) t
+    </select>
+
+    <select id="listSearch" resultType="com.wenxianm.model.dto.SongDto">
+        select *
+        from (
+                 select *
+                 from t_song t1
+                 where name like concat('%', #{songSearchParam.searchKey}, '%')
+                 union
+                 select *
+                 from t_song t2
+                 where artist_id = #{songSearchParam.artistId}
+             ) t
+        order by num
+        limit #{songSearchParam.offset}, #{songSearchParam.limit}
+    </select>
+
+    <select id="list" resultType="com.wenxianm.model.entity.Song">
+        select * from t_song t1
+        <where>
+            <if test="songParam.name != null and songParam.name != ''">
+                name like concat('%', #{songParam.name}, '%')
+            </if>
+            <if test="songParam.artistId != null">
+                and artist_id = #{songParam.artistId}
+            </if>
+        </where>
+        order by num
+        limit #{songParam.offset}, #{songParam.limit}
+    </select>
 </mapper>

@@ -1,4 +1,4 @@
-package com.wenxianm.dao.song;
+package com.wenxianm.dao;
 
 import com.wenxianm.model.entity.Artist;
 import org.springframework.stereotype.Repository;

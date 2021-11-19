@@ -91,7 +91,7 @@
         white-space: nowrap;
         cursor: pointer;
         margin-top: 0px !important;
-        width: 300px;
+        width: 280px;
         display: inline-block;
     }
     #song-result-item:hover, #artist-result-item:hover{
@@ -101,6 +101,10 @@
     #song-result-item .song-name, .artist-name{
         margin-right: 0px;
         display: inline-block;
+        overflow:hidden;
+        text-overflow:ellipsis;
+        vertical-align: middle;
+        width: 280px;
     }
 </style>
 <body style="background-color: white">
@@ -145,6 +149,9 @@
                     <div id="song-result-item" v-for="(item, index) in searchResultSongs" v-on:click="playSong(item)">
                         <span class="song-name">{{item.name}}-{{item.artistName}}</span>
                     </div>
+                    <div>
+                        <span v-if="searchResultSongTotal > searchResultSongs.length">显示更多...</span>
+                    </div>
                 </div>
             </div>
             <div id="artist-result">
@@ -178,5 +185,7 @@
 
     layui.use(['layer'], function () {
         var layer = layui.layer;
+
+        // layer.tips('只想提示地精准些', '.song-name');
     });
 </script>

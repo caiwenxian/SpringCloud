@@ -49,6 +49,15 @@ public interface IArtistService {
     ArtistDto getByArtistId(Long artistId);
 
     /**
+     * 根据artistId获取
+     * @param artistIds 歌手id
+     * @author caiwx
+     * @date 2021/10/21 - 10:34
+     * @return ArtistDto
+     **/
+    List<ArtistDto> getByArtistIds(List<Long> artistIds);
+
+    /**
      * 获取列表
      * @param artistParam 查询参数
      * @author caiwx

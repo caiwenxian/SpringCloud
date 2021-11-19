@@ -16,7 +16,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
  * @Author cwx
  * @Date 2021/9/25 15:58
  **/
-@MapperScan("com.wenxianm.**.dao")
+@MapperScan(basePackages = {"com.wenxianm.dao"})
 @EnableFeignClients
 @EnableScheduling
 @EnableAsync

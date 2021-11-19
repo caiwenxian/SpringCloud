@@ -1,5 +1,6 @@
 package com.wenxianm.model.vo;
 
+import com.wenxianm.model.PageData;
 import com.wenxianm.model.dto.ArtistDto;
 import com.wenxianm.model.dto.SongDto;
 import lombok.AllArgsConstructor;
@@ -21,7 +22,7 @@ public class SongSearchVO implements Serializable {
     /**
      * 歌曲
      */
-    private List<SongDto> songs;
+    private PageData<SongDto> songs;
 
     /**
      * 歌手

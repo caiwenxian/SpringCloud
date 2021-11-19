@@ -11,6 +11,7 @@ import com.wenxianm.model.enums.MqMessageStatusEnum;
 import com.wenxianm.model.enums.MqMessageTypeEnum;
 import com.wenxianm.model.mq.TopSongMessage;
 import com.wenxianm.model.param.SongParam;
+import com.wenxianm.model.param.SongSearchParam;
 import com.wenxianm.model.vo.Mp3UrlVO;
 import com.wenxianm.model.vo.SongHotVO;
 import com.wenxianm.model.vo.SongSearchVO;
@@ -75,17 +76,19 @@ public class SongController implements SongApi{
 
     /**
      * 搜索
-     * @param name
+     * @param songSearchParam
      * @author caiwx
      * @date 2021/11/3 - 16:37
      * @return SongSearchVO
      **/
     @GetMapping("/search")
-    public SongSearchVO search(String name) {
-        if (StringUtils.isBlank(name)) {
+    public SongSearchVO search(SongSearchParam songSearchParam) {
+        if (StringUtils.isBlank(songSearchParam.getSearchKey())) {
             return new SongSearchVO();
         }
-        return songService.search(name.trim());
+        songSearchParam.setPageSize(30);
+        songSearchParam.setSearchKey(songSearchParam.getSearchKey().trim());
+        return songService.search(songSearchParam);
     }
 
     /**
@@ -101,14 +104,14 @@ public class SongController implements SongApi{
 
     /**
      * 获取mp3播放外链
-     * @param songIds 歌曲id
+     * @param songSearchParam#songIds 歌曲id
      * @author caiwx
      * @date 2021/11/6 - 9:57
      * @return String
      **/
     @PostMapping("/get/mp3")
-    public List<Mp3UrlVO> getMp3(@RequestBody List<Long> songIds) {
-        return songService.getMp3(songIds);
+    public List<Mp3UrlVO> getMp3(@RequestBody SongSearchParam songSearchParam) {
+        return songService.getMp3(songSearchParam.getSongIds());
     }
 
     /**

@@ -1,4 +1,4 @@
-package com.wenxianm.dao.mq;
+package com.wenxianm.dao;
 
 import com.wenxianm.model.entity.Artist;
 import com.wenxianm.model.entity.MqMessage;

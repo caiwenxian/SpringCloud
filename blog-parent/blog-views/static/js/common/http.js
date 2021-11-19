@@ -2,6 +2,8 @@ var http = {};
 http.URL = 'http://127.0.0.1:7777';
 // http.URL = '';
 
+http.CONTENT_TYPE_ONE = "application/json;charset=UTF-8"
+
 var notLoginMsg = function () {
     layui.use('layer', function () {
         layer.msg("用户未登录");
@@ -39,7 +41,7 @@ http.get = function (url, data, callback) {
     });
 }
 
-http.post = function (url, data, callback) {
+http.post = function (url, data, callback, contentType) {
     $.ajax({
         method: 'POST',
         url: http.URL + url,
@@ -48,7 +50,8 @@ http.post = function (url, data, callback) {
         },
         crossDomain: true,
         data: data,
-        async: true,
+        async: false,
+        contentType: contentType ? contentType : "application/x-www-form-urlencoded; charset=UTF-8",
         success: function (result) {
             /*if (result.code === 401) {
                 notLoginMsg();
@@ -60,11 +63,11 @@ http.post = function (url, data, callback) {
         },
         error: function (result) {
 
-            if (result.status === 500) {
+            if (result.status != 100) {
                 layui.use('layer', function () {
                     layer.open({
                         title: '信息'
-                        , content: result.responseText
+                        , content: result.responseText == '' ? "服务器错误！" : result.responseText
                     });
                 })
 

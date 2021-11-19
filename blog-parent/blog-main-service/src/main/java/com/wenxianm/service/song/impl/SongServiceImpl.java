@@ -4,14 +4,15 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Lists;
+import com.wenxianm.model.Page;
 import com.wenxianm.model.entity.MqMessage;
 import com.wenxianm.model.enums.*;
 import com.wenxianm.model.param.ArtistParam;
+import com.wenxianm.model.param.SongSearchParam;
 import com.wenxianm.model.vo.Mp3UrlVO;
 import com.wenxianm.model.vo.SongHotVO;
 import com.wenxianm.model.vo.SongSearchVO;
-import com.wenxianm.mq.MqProducer;
-import com.wenxianm.dao.song.ISongDao;
+import com.wenxianm.dao.ISongDao;
 import com.wenxianm.exception.BaseException;
 import com.wenxianm.model.Constants;
 import com.wenxianm.model.PageData;
@@ -46,6 +47,7 @@ import tk.mybatis.mapper.entity.Example;
 import java.io.UnsupportedEncodingException;
 import java.util.*;
 import java.util.concurrent.ThreadPoolExecutor;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -80,15 +82,32 @@ public class SongServiceImpl implements ISongService {
     public PageData<SongDto> listSong(SongParam songParam) {
         Example example = new Example(Song.class);
         Example.Criteria criteria = example.createCriteria();
-        criteria.andLike(PojoUtil.field(Song::getName),songParam.getName());
+        if (!StringUtils.isEmpty(songParam.getName())) {
+            criteria.andLike(PojoUtil.field(Song::getName), "%" + songParam.getName() + "%");
+        }
+        if (Objects.nonNull(songParam.getArtistId())) {
+            criteria.andEqualTo(PojoUtil.field(Song::getArtistId), songParam.getArtistId());
+        }
+        example.setOrderByClause("num asc");
         int count = songDao.selectCountByExample(example);
         if (count == Constants.ZERO) {
             return PageData.emptyPage();
         }
         songParam.setTotalItem(count);
-        RowBounds rowBounds = new RowBounds(songParam.getOffset(), songParam.getLimit());
-        List<Song> songs = songDao.selectByExampleAndRowBounds(example, rowBounds);
+        long o = System.currentTimeMillis();
+        log.info("start:{}", o);
+        List<Song> songs = songDao.list(songParam);
+        log.info("start:{}", System.currentTimeMillis() - o);
         List<SongDto> list = BeanUtil.fromList(songs, SongDto.class);
+        List<Long> artistIds = list.stream().map(SongDto::getArtistId).distinct().collect(Collectors.toList());
+        List<ArtistDto> artists = artistService.getByArtistIds(artistIds);
+        Map<Long, ArtistDto> artistMap = artists.stream().collect(Collectors.toMap(ArtistDto::getArtistId, Function.identity()));
+        list.forEach(v -> {
+            ArtistDto artistDto = artistMap.get(v.getArtistId());
+            if (Objects.nonNull(artistDto)) {
+                v.setArtistName(artistDto.getName());
+            }
+        });
         return new PageData<>(list, songParam);
     }
 
@@ -108,7 +127,14 @@ public class SongServiceImpl implements ISongService {
         if (CollectionUtils.isEmpty(songs)) {
             return Lists.newArrayList();
         }
-        return BeanUtil.fromList(songs, SongDto.class);
+        List<SongDto> list = BeanUtil.fromList(songs, SongDto.class);
+        list.forEach(v -> {
+            ArtistDto artist = artistService.getByArtistId(v.getArtistId());
+            if (Objects.nonNull(artist)) {
+                v.setArtistName(artist.getName());
+            }
+        });
+        return list;
     }
 
     @Override
@@ -415,27 +441,39 @@ public class SongServiceImpl implements ISongService {
     }
 
     @Override
-    public SongSearchVO search(String name) {
-        List<SongDto> songs = this.list(new SongParam(name));
-        List<ArtistDto> artists = artistService.list(new ArtistParam(name));
-        if (!CollectionUtils.isEmpty(artists)) {
-            SongParam songParam = new SongParam();
-            songParam.setArtistId(artists.get(0).getArtistId());
-            List<SongDto> list = this.list(songParam);
-            songs.addAll(list);
-        }
-        songs.forEach(v -> {
-            ArtistDto artist = artistService.getByArtistId(v.getArtistId());
-            if (Objects.nonNull(artist)) {
-                v.setArtistName(artist.getName());
+    public SongSearchVO search(SongSearchParam searchParam) {
+        Integer count = 0;
+        try {
+            List<ArtistDto> artists = artistService.list(new ArtistParam(searchParam.getSearchKey()));
+            if (!CollectionUtils.isEmpty(artists)) {
+                searchParam.setArtistId(artists.get(0).getArtistId());
             }
-        });
-        if (CollectionUtils.isEmpty(songs)) {
-//            threadPoolExecutor.execute(() -> reptileSong(name));
-            // 将搜索关键词push到队列
-            redisQueueService.lPush(Constants.REPTILE_SONG, name);
+            count = songDao.countSearch(searchParam);
+            if (count.equals(Constants.ZERO)) {
+                return new SongSearchVO(PageData.emptyPage(), artists);
+            }
+            searchParam.setTotalItem(count);
+            List<SongDto> list = songDao.listSearch(searchParam);
+            List<Long> artistIds = list.stream().map(SongDto::getArtistId).distinct().collect(Collectors.toList());
+            List<ArtistDto> artistList = artistService.getByArtistIds(artistIds);
+            Map<Long, ArtistDto> artistMap = artistList.stream().collect(Collectors.toMap(ArtistDto::getArtistId, Function.identity()));
+            list.forEach(v -> {
+                ArtistDto artistDto = artistMap.get(v.getArtistId());
+                if (Objects.nonNull(artistDto)) {
+                    v.setArtistName(artistDto.getName());
+                }
+            });
+            PageData pageData = new PageData(list, new Page(searchParam));
+            return new SongSearchVO(pageData, artists);
+        } catch (Exception e) {
+            log.error("搜索出错", e);
+            throw new BaseException(ServerCode.ERROR, "搜索出错");
+        } finally {
+            if (count == 0) {
+                // 将搜索关键词push到队列
+                redisQueueService.lPush(Constants.REPTILE_SONG, searchParam.getSearchKey());
+            }
         }
-        return new SongSearchVO(songs, artists);
     }
 
     @Override
@@ -447,10 +485,6 @@ public class SongServiceImpl implements ISongService {
         List<SongDto> list = pageData.getList();
         List<SongHotVO> songHotVOS = BeanUtil.fromList(list, SongHotVO.class);
         songHotVOS.forEach(v -> {
-            ArtistDto artist = artistService.getByArtistId(v.getArtistId());
-            if (Objects.nonNull(artist)) {
-                v.setArtistName(artist.getName());
-            }
             v.setPlayTimes(IDUtil.randomInRange(1, 100));
         });
         return songHotVOS;

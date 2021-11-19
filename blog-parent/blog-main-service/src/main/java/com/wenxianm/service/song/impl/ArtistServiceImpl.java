@@ -1,7 +1,7 @@
 package com.wenxianm.service.song.impl;
 
 import com.google.common.collect.Lists;
-import com.wenxianm.dao.song.IArtistDao;
+import com.wenxianm.dao.IArtistDao;
 import com.wenxianm.exception.BaseException;
 import com.wenxianm.model.Constants;
 import com.wenxianm.model.PageData;
@@ -91,6 +91,18 @@ public class ArtistServiceImpl implements IArtistService {
             return null;
         }
         return BeanUtil.from(artists.get(0), ArtistDto.class);
+    }
+
+    @Override
+    public List<ArtistDto> getByArtistIds(List<Long> artistIds) {
+        Example example = new Example(Artist.class);
+        Example.Criteria criteria = example.createCriteria();
+        criteria.andIn(PojoUtil.field(Artist::getArtistId), artistIds);
+        List<Artist> artists = artistDao.selectByExample(example);
+        if (CollectionUtils.isEmpty(artists)) {
+            return Lists.newArrayList();
+        }
+        return BeanUtil.fromList(artists, ArtistDto.class);
     }
 
     @Override

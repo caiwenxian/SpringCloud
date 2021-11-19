@@ -33,15 +33,18 @@
     }
     #menu ui li {
         list-style-type: none;
-        padding: 10px 0px 10px 5px;
-        cursor: pointer;
-        width: 100%;
+        /*padding: 10px 0px 10px 5px;*/
+        /*cursor: pointer;*/
         width: 80%;
     }
     #menu ui li a {
         text-decoration:none;
         color: #787575;
         line-height: 30px;
+        padding: 10px 0px 10px 5px;
+        cursor: pointer;
+        width: 100%;
+        display: inline-block
     }
     #menu ui li.current {
         background-color: #f5f5f7;
@@ -68,13 +71,17 @@
         <div id="icon">MUSIC REPOSITORY</div>
         <div id="menu">
             <ui>
-                <li v-bind:class="{current: menu_current == 'music'}" v-on:click="chooseMenu('music')">
-                    <img src="/blog-views/static/images/file_search.png">
-                    <router-link to="/music">music search</router-link>
+                <li v-bind:class="{current: menu_current == 'music'}" v-on:click="chooseMenu('music')" >
+                    <router-link to="/music">
+                        <img src="/blog-views/static/images/file_search.png">
+                        <span to="/music">music search</span>
+                    </router-link>
                 </li>
                 <li v-bind:class="{current: menu_current == 'music_playlist'}" v-on:click="chooseMenu('music_playlist')">
-                    <img src="/blog-views/static/images/music_list.png">
-                    <router-link to="/hash2">music playlist</router-link>
+                    <router-link to="/hash2">
+                        <img src="/blog-views/static/images/music_list.png">
+                        <span to="/hash2">music playlist</span>
+                    </router-link>
                 </li>
             </ui>
         </div>

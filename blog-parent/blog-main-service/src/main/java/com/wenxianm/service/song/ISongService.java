@@ -5,6 +5,7 @@ import com.wenxianm.model.PageData;
 import com.wenxianm.model.dto.SongDto;
 import com.wenxianm.model.entity.Song;
 import com.wenxianm.model.param.SongParam;
+import com.wenxianm.model.param.SongSearchParam;
 import com.wenxianm.model.vo.Mp3UrlVO;
 import com.wenxianm.model.vo.SongHotVO;
 import com.wenxianm.model.vo.SongSearchVO;
@@ -113,12 +114,12 @@ public interface ISongService {
 
     /**
      * 搜索歌曲或者歌手
-     * @param name
+     * @param songSearchParam
      * @author caiwx
      * @date 2021/11/3 - 16:28
      * @return SongSearchVO
      **/
-    SongSearchVO search(String name);
+    SongSearchVO search(SongSearchParam songSearchParam);
 
     /**
      * 热门歌曲
