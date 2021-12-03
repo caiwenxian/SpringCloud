@@ -3,14 +3,18 @@ package com.wenxianm.service.mq.impl;
 import com.google.common.collect.Lists;
 import com.wenxianm.dao.IMqMessageDao;
 import com.wenxianm.exception.BaseException;
+import com.wenxianm.model.Constants;
 import com.wenxianm.model.PageData;
 import com.wenxianm.model.ServerCode;
 import com.wenxianm.model.dto.MqMessageDto;
 import com.wenxianm.model.entity.MqMessage;
+import com.wenxianm.model.entity.Song;
 import com.wenxianm.model.param.MqMessageParam;
+import com.wenxianm.service.RedisQueueService;
 import com.wenxianm.service.mq.IMqMessageService;
 import com.wenxianm.utils.BeanUtil;
 import com.wenxianm.utils.IDUtil;
+import com.wenxianm.utils.JsonUtil;
 import com.wenxianm.utils.PojoUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.session.RowBounds;
@@ -18,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
+import sun.plugin2.message.Message;
 import tk.mybatis.mapper.entity.Example;
 
 import java.util.Date;
@@ -35,6 +40,8 @@ public class MqMessageServiceImpl implements IMqMessageService {
 
     @Autowired
     private IMqMessageDao mqMessageDao;
+    @Autowired
+    private RedisQueueService redisQueueService;
 
     @Override
     public void addOne(MqMessage message) {
@@ -114,5 +121,18 @@ public class MqMessageServiceImpl implements IMqMessageService {
         RowBounds rowBounds = new RowBounds(param.getOffset(), param.getLimit());
         List<MqMessage> mqMessages = mqMessageDao.selectByExampleAndRowBounds(example, rowBounds);
         return new PageData(BeanUtil.fromList(mqMessages, MqMessageDto.class), param);
+    }
+
+    @Override
+    public void add2Redis(MqMessage message) {
+        // 存储到redis
+        redisQueueService.lPush(Constants.UPDATE_MP3_URL_KEY, JsonUtil.objToStr(message));
+    }
+
+    @Override
+    public void consumerRedis() {
+        redisQueueService.bRPopLPush(Constants.UPDATE_MP3_URL_KEY, (value) -> {
+            this.addOne(JsonUtil.stringToObj(value, MqMessage.class));
+        }, null);
     }
 }

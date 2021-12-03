@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>music search</title>
+    <script src="/blog-views/static/plugins/jquery/jquery.min.js"></script>
+    <script src="/blog-views/static/plugins/layui/layui.js"></script>
+    <script src="/blog-views/static/plugins/vue/vue.min.js"></script>
+    <script src="/blog-views/static/js/common/http.js"></script>
+    <script src="/blog-views/static/js/common/common.js"></script>
+    <script src="/blog-views/static/js/common/utils.js"></script>
+    <link rel='stylesheet' href='/blog-views/static/plugins/layui/css/layui.css'>
+    <link rel='stylesheet' href='/blog-views/static/css/common.css'>
+</head>
+<style>
+    #playlist {
+        width: 80%;
+        margin-left: 12.5%;
+    }
+    .left {
+        position: fixed;
+        width: 45%;
+        margin-top: 30px;
+    }
+    .right {
+        margin-left: 60%;
+        width: 40%;
+    }
+    .song-item {
+        line-height: 60px;
+        border-radius: 10px;
+        color: #000000ad;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+    }
+    .song-item:hover {
+        color: #ef6b1e;
+        background-color: rgba(246, 216, 228, 0.82);
+        opacity: 0.8
+    }
+    .song-item:active {
+        color: #ef6b1e;
+        background-color: rgba(246, 216, 228, 0.82);
+        opacity: 1
+    }
+    .song-item.current {
+        color: #ef6b1e;
+        background-color: rgba(246, 216, 228, 0.82);
+        opacity: 1
+    }
+    .song-item .index {
+        margin-left: 10px;
+    }
+    .song-item .name {
+        margin-left: 10px;
+        display: inline-block;
+        width: 70%;
+    }
+    .song-item .author {
+        margin-left: 10px;
+    }
+
+</style>
+<body style="background-color: white">
+    <div id="playlist" v-cloak>
+        <div class="left">
+            <div>
+                <div v-for="(song, index) in songs" class="song-item" v-bind:class="{current: currentSongId == song.id}"
+                     v-on:click="play(song, index)" >
+                    <span class="index">{{index + 1}}</span>
+                    <span class="name">{{song.name}}</span>
+                    <span class="author">{{song.author}}</span>
+                </div>
+            </div>
+        </div>
+        <div class="right">
+            <div>
+                <div>
+                    <img src="/blog-views/static/images/music.png">
+                </div>
+                <div>
+                    歌词的含义就是歌词
+                    歌词的含义就是歌词
+                    歌词的含义就是歌词
+                    歌词的含义就是歌词
+                    歌词的含义就是歌词
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+<script src="/blog-views/static/js/music-playlist.js"></script>
+<script>
+    playlist.init();
+</script>

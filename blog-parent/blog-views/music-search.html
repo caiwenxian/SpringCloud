@@ -106,6 +106,16 @@
         vertical-align: middle;
         width: 280px;
     }
+    .more {
+        font-size: 16px;
+        color: #06bb14;
+        cursor: pointer;
+        font-weight: 600;
+        opacity: 0.5;
+    }
+    .more:hover {
+        opacity: 1;
+    }
 </style>
 <body style="background-color: white">
     <div id="music" v-cloak>
@@ -150,7 +160,7 @@
                         <span class="song-name">{{item.name}}-{{item.artistName}}</span>
                     </div>
                     <div>
-                        <span v-if="searchResultSongTotal > searchResultSongs.length">显示更多...</span>
+                        <span v-if="searchResultSongTotal > searchResultSongs.length" class="more" v-on:click="searchMore()">展示更多...</span>
                     </div>
                 </div>
             </div>

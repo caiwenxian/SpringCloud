@@ -16,6 +16,9 @@ import org.apache.rocketmq.spring.core.RocketMQTemplate;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
+import java.util.Objects;
+
 /**
  * 不使用stream发送rocketmq
  * 可以获取到rocketmq返回的消息id
@@ -36,17 +39,36 @@ public class MqProducerWithoutStream {
     @Value("${spring.cloud.stream.bindings.output1.destination}")
     private String output1Topic;
 
+    private Producer output1;
+
     /**
      * 生成output1对应topic的producer
      * @author caiwx
      * @date 2021/10/28 - 15:49
      * @return Producer
      **/
-    public Producer output1() {
-        RocketMQTemplate r = new RocketMQTemplate();
+    @PostConstruct
+    public void initOutput1() throws MQClientException {
+        log.info("initOutput1");
         DefaultMQProducer producer = new DefaultMQProducer(output1Group);
         producer.setNamesrvAddr(nameServer);
         producer.setSendMsgTimeout(6000);
+        producer.start();
+        this.output1 = new Producer(producer, output1Topic);
+    }
+
+    public Producer output1() {
+        if (Objects.nonNull(this.output1)) {
+            return output1;
+        }
+        DefaultMQProducer producer = new DefaultMQProducer(output1Group);
+        producer.setNamesrvAddr(nameServer);
+        producer.setSendMsgTimeout(6000);
+        try {
+            producer.start();
+        } catch (MQClientException e) {
+            e.printStackTrace();
+        }
         return new Producer(producer, output1Topic);
     }
 
@@ -72,7 +94,7 @@ public class MqProducerWithoutStream {
          **/
         public MessageResponse send(Object msg, MQTagEnum mqTagEnum) {
             try {
-                defaultMQProducer.start();
+//                defaultMQProducer.start();
                 Message message = new Message(this.topic, mqTagEnum.getTag(), JsonUtil.objToStr(msg).getBytes());
                 SendResult send = defaultMQProducer.send(message);
                 log.info("sendResult: {}", JsonUtil.objToStr(send));
@@ -80,7 +102,7 @@ public class MqProducerWithoutStream {
             } catch (MQClientException | RemotingException | MQBrokerException | InterruptedException e) {
                 log.error("发送mq消息出错: ", e);
             } finally {
-                defaultMQProducer.shutdown();
+//                defaultMQProducer.shutdown();
             }
             return MessageResponse.fail();
         }
@@ -96,7 +118,7 @@ public class MqProducerWithoutStream {
          **/
         public MessageResponse send(Object msg, MQTagEnum mqTagEnum, DelayTimeLevelEnum delayTimeLevelEnum) {
             try {
-                defaultMQProducer.start();
+//                defaultMQProducer.start();
                 Message message = new Message(this.topic, mqTagEnum.getTag(), JsonUtil.objToStr(msg).getBytes());
                 message.setDelayTimeLevel(delayTimeLevelEnum.getCode());
                 SendResult send = defaultMQProducer.send(message);
@@ -105,7 +127,7 @@ public class MqProducerWithoutStream {
             } catch (MQClientException | RemotingException | MQBrokerException | InterruptedException e) {
                 log.error("发送mq消息出错: ", e);
             } finally {
-                defaultMQProducer.shutdown();
+//                defaultMQProducer.shutdown();
             }
             return MessageResponse.fail();
         }

@@ -13,7 +13,9 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum MqMessageTypeEnum {
 
-    REPTILE_TOP_SONG(1, "reptile 榜单");
+    REPTILE_TOP_SONG(1, "reptile 榜单"),
+
+    UPDATE_MP3_URL(2, "更新歌曲的mp3");
 
     private Integer code;
 

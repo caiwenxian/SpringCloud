@@ -25,6 +25,10 @@ public class Constants {
 
     public static final Long ZERO_L = 0L;
 
+    public static final Long TEN_THOUSAND_L = 10000L;
+
+    public static final Long ONE_HUNDRED_L = 100L;
+
     public static final String STR_NEGATIVE_ONE = "-1";
 
     public static final String WANG_YI_API = "http://music.163.com";
@@ -47,7 +51,9 @@ public class Constants {
 
     public static final String REDIS_QUEUE_BACKUP = "redis_queue_backup_";
 
-    public static final String REPTILE_SONG = "reptile_song";
+    public static final String REPTILE_SONG_KEY = "reptile_song";
+
+    public static final String UPDATE_MP3_URL_KEY = "update_mp3_url";
 
 
 

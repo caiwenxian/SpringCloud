@@ -1,6 +1,7 @@
 package com.wenxianm.config;
 
 import com.wenxianm.service.RedisQueueService;
+import com.wenxianm.service.mq.IMqMessageService;
 import com.wenxianm.service.song.ISongService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,11 +19,15 @@ import javax.annotation.PostConstruct;
 public class RedisQueueConfiguration {
 
     @Autowired
-    ISongService songService;
+    private ISongService songService;
+    @Autowired
+    private IMqMessageService mqMessageService;
 
     @PostConstruct
     public void init() {
         log.info("初始化RedisQueueConfiguration");
         songService.consumerWaitReptile();
+
+        mqMessageService.consumerRedis();
     }
 }

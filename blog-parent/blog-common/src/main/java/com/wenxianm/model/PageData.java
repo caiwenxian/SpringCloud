@@ -29,4 +29,11 @@ public class PageData<E> implements Serializable {
         pageData.setList(Lists.newArrayList());
         return pageData;
     }
+
+    public static PageData emptyPage(Page page) {
+        PageData pageData = new PageData();
+        pageData.setList(Lists.newArrayList());
+        pageData.setPage(new Page(page));
+        return pageData;
+    }
 }

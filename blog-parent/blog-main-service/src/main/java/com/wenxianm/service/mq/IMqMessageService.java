@@ -58,5 +58,20 @@ public interface IMqMessageService {
      **/
     PageData<MqMessageDto> listPage(MqMessageParam param);
 
+    /**
+     * 存储到redis
+     * @param message
+     * @author caiwx
+     * @date 2021/11/19 - 15:20
+     **/
+    void add2Redis(MqMessage message);
+
+    /**
+     * 消费存储在redis的数据
+     * @author caiwx
+     * @date 2021/11/19 - 15:32
+     **/
+    void consumerRedis();
+
 
 }

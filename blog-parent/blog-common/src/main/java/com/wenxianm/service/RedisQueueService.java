@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Resource;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.function.Consumer;
@@ -59,10 +60,11 @@ public class RedisQueueService {
      * 消费队列
      * @param key 队列名称
      * @param consumer 消费者
+     * @param duration 消费间隔，单位毫秒
      * @author caiwx
      * @date 2021/11/11 - 10:50
      **/
-    public void bRPopLPush(@Nonnull String key, Consumer<String> consumer) {
+    public void bRPopLPush(@Nonnull String key, Consumer<String> consumer, Long duration) {
         CompletableFuture.runAsync(() -> {
             RedisConnection connection = RedisConnectionUtils.getConnection(redisConnectionFactory);
             try {
@@ -76,9 +78,9 @@ public class RedisQueueService {
                     try {
                         byteValue = connection.bRPopLPush(0, srcKey, dstKey);
                         if (byteValue != null && byteValue.length != 0) {
+                            log.info("[{}]队列pop元素[{}]", getKey(key), new String(byteValue));
                             consumer.accept(new String(byteValue));
                             success = true;
-                            log.info("[{}]队列pop元素[{}]", getKey(key), new String(byteValue));
                         }
                     } catch (Exception ignored) {
                         // 防止获取 key 达到超时时间抛出 QueryTimeoutException 异常退出
@@ -89,10 +91,12 @@ public class RedisQueueService {
                             connection.lRem(dstKey, 1, byteValue);
                         }
                     }
-                    try {
-                        Thread.sleep(10000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
+                    if (Objects.nonNull(duration)) {
+                        try {
+                            Thread.sleep(duration);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
                     }
                 }
             } finally {

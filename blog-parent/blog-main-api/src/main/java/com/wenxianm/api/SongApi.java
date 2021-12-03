@@ -71,4 +71,13 @@ public interface SongApi {
     @GetMapping(value = "/reptileArtistHotSongs")
     void reptileArtistHotSongs(@RequestParam Long artistId);
 
+    /**
+     * 更新歌曲mp3
+     * @param songDto
+     * @author caiwx
+     * @date 2021/11/20 - 16:01
+     **/
+    @PostMapping(value = "/updateMp3Url")
+    void updateMp3Url(@RequestBody SongDto songDto);
+
 }

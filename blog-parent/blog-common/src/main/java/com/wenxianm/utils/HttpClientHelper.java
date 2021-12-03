@@ -275,6 +275,8 @@ public class HttpClientHelper {
     public static String sendGet(String urlParam, Map<String, Object> params, String charset) throws UnsupportedEncodingException {
         log.info("url:" + urlParam);
         log.info("params:" + (params == null ? "" : params.toString()));
+        Long time = System.currentTimeMillis();
+        log.info("startTime: {}", time);
         StringBuffer resultBuffer = null;
         // 构建请求参数
         StringBuffer sbParams = new StringBuffer();
@@ -341,6 +343,7 @@ public class HttpClientHelper {
                 }
             }
         }
+        log.info("useTime: {}", System.currentTimeMillis() - time);
         return resultBuffer.toString();
     }
 

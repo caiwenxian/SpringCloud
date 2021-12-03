@@ -2,6 +2,8 @@ var search = {};
 search.init = function () {
     search.vm.listSearchRecord();
     search.vm.listHotSong();
+    window.localStorage.setItem('blog.playlist', '');
+    window.localStorage.setItem('blog.currentSongId', '');
 };
 
 search.vm = new Vue({
@@ -11,6 +13,8 @@ search.vm = new Vue({
         searchResultArtists: [],
         searchResultSongTotal: 0,
         searchKey: null,
+        searchResultPage: 1,
+        searchOldKey: null,
         showWhat: 'default',
         searchRecord: [],
         hotSongs: [],
@@ -23,15 +27,30 @@ search.vm = new Vue({
             if (!search.vm.searchKey) {
                 return;
             }
+            if (search.vm.searchOldKey != null) {
+                search.vm.searchResultPage = search.vm.searchOldKey == item ? search.vm.searchResultPage : 1;
+            }
+            let params = {
+                searchKey: search.vm.searchKey,
+                pageIndex: search.vm.searchResultPage
+            }
             var url = "/blog/song/search";
-            http.get(url, {searchKey: search.vm.searchKey}, function (result) {
+            http.get(url, params, function (result) {
                 search.vm.showWhat = 'searchResult';
                 if (result.data) {
-                    search.vm.searchResultSongs = result.data.songs.list ? result.data.songs.list : [];
+                    if (search.vm.searchKey != search.vm.searchOldKey) {
+                        search.vm.searchResultSongs = [];
+                    }
+                    search.vm.searchResultSongs.push.apply(search.vm.searchResultSongs, result.data.songs.list);
                     search.vm.searchResultArtists = result.data.artists ? result.data.artists : [];
                     search.vm.searchResultSongTotal = result.data.songs.page.totalItem;
                 }
             });
+            search.vm.searchOldKey = item;
+        },
+        searchMore: function () {
+            search.vm.searchResultPage ++;
+            this.searchSong(search.vm.searchKey);
         },
         reset: function () {
             search.vm.showWhat = 'default';
@@ -71,24 +90,41 @@ search.vm = new Vue({
             });
         },
         playSong: function (song) {
-            let mp3Urls = search.vm.getMp3Url([song.songId]);
-            if (mp3Urls.length == 0) {
-                layer.msg('暂无音源', {icon: 5});
-                return;
-            }
-            let obj = {
-                name: song.name,
-                author: song.artistName,
-                src: mp3Urls.mp3Url,
-                cover: '/blog-views/static/images/music.png'
-            }
-            if (search.vm.currentSong == null) {
-                parent.window.initMusic([obj]);
-            } else {
-                parent.window.addSong(obj, search.vm.currentSongIndex);
-            }
-            search.vm.currentSong = song.songId;
-            search.vm.currentSongIndex ++;
+            search.vm.getMp3Url([song.songId], function (mp3Urls) {
+                if (mp3Urls.length == 0) {
+                    layer.msg('暂无音源', {icon: 5});
+                    return;
+                }
+                /*let obj = {
+                    name: song.name,
+                    author: song.artistName,
+                    src: mp3Urls[0].mp3Url,
+                    cover: '/blog-views/static/images/music.png',
+                    id: song.songId
+                }*/
+                let obj = {
+                    name: song.name,
+                    artist: song.artistName,
+                    url: mp3Urls[0].mp3Url,
+                    cover: '/blog-views/static/images/music.png',
+                    id: song.songId
+                }
+                /*if (parent.player == null) {
+                    parent.window.initMusic([obj]);
+                } else {
+                    parent.window.addSong(obj);
+                }*/
+                if (!parent.ap.isStart) {
+                    parent.window.ap.init([obj]);
+                } else {
+                    parent.window.ap.addOne(obj);
+                }
+                search.vm.currentSong = song.songId;
+                search.vm.currentSongIndex ++;
+                // parent.window.document.getElementById("music-playlist").contentWindow.playlist.pushSong(obj);
+            });
+
+
         },
         playArtistSong: function (artist) {
             var url = "/blog/song/list/artist/song?artistId=" + artist.artistId;
@@ -142,5 +178,7 @@ search.vm = new Vue({
                 callback(result.data);
             }, http.CONTENT_TYPE_ONE);
         }
+    },
+    computed: {
     }
 });

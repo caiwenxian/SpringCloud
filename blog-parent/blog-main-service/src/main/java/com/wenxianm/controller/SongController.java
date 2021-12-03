@@ -6,6 +6,7 @@ import com.wenxianm.api.SongApi;
 import com.wenxianm.model.PageData;
 import com.wenxianm.model.dto.SongDto;
 import com.wenxianm.model.entity.MqMessage;
+import com.wenxianm.model.entity.Song;
 import com.wenxianm.model.enums.MQTagEnum;
 import com.wenxianm.model.enums.MqMessageStatusEnum;
 import com.wenxianm.model.enums.MqMessageTypeEnum;
@@ -142,5 +143,13 @@ public class SongController implements SongApi{
             );
             mqMessageService.addOne(message);
         }
+    }
+
+    @Override
+    public void updateMp3Url(SongDto songDto) {
+        Song song = new Song();
+        song.setSongId(songDto.getSongId());
+        song.setMp3Url(songDto.getMp3Url());
+        songService.updateSong(song);
     }
 }

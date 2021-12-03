@@ -7,6 +7,7 @@ import com.google.common.collect.Lists;
 import com.wenxianm.model.Page;
 import com.wenxianm.model.entity.MqMessage;
 import com.wenxianm.model.enums.*;
+import com.wenxianm.model.mq.Mp3UrlMessage;
 import com.wenxianm.model.param.ArtistParam;
 import com.wenxianm.model.param.SongSearchParam;
 import com.wenxianm.model.vo.Mp3UrlVO;
@@ -254,12 +255,12 @@ public class SongServiceImpl implements ISongService {
     }
 
     @Override
-    public void reptileMp3Url(List<Long> songIds) {
+    public List<Song> reptileMp3Url(List<Long> songIds) {
         if (CollectionUtils.isEmpty(songIds)) {
             List<Song> songs = this.listSongNoMp3();
             if (CollectionUtils.isEmpty(songs)) {
                 log.info("没有需要获取mp3的歌曲");
-                return;
+                return Lists.newArrayList();
             }
             List<Long> ids = songs.stream().map(v -> v.getSongId()).distinct().collect(Collectors.toList());
             songIds.addAll(ids);
@@ -277,19 +278,36 @@ public class SongServiceImpl implements ISongService {
             log.error("请求网易接口出错: ", e);
             throw new BaseException(ServerCode.ERROR, "请求网易接口出错");
         }
+        List<Song> list = new ArrayList<>();
         JSONObject jsonObject = JSONObject.parseObject(result);
         JSONArray songs = jsonObject.getJSONArray("data");
         songs.forEach(v -> {
             JSONObject json = (JSONObject)v;
             String map3Url = json.getString("url");
             Long songId = json.getLong("id");
-            //添加歌曲mp3url
+            // 推送到mq
+            Mp3UrlMessage mp3UrlMessage = new Mp3UrlMessage();
+            mp3UrlMessage.setUrl(StringUtils.isEmpty(map3Url) ? "-1" : map3Url);
+            mp3UrlMessage.setSongId(songId);
+            MqProducerWithoutStream.MessageResponse messageResponse = mqProducer.output1().send(mp3UrlMessage,
+                    MQTagEnum.BLOG_MAIN_UPDATE_MP3_URL,
+                    DelayTimeLevelEnum.getDelayTimeLevel(Constants.ONE));
+            if (messageResponse.getSuccess()) {
+                MqMessage message = MqMessage.initRocketMq(MqMessageTypeEnum.REPTILE_TOP_SONG.getCode(),
+                        MqMessageStatusEnum.DOING.getCode(),
+                        JsonUtil.objToStr(mp3UrlMessage),
+                        messageResponse.getId()
+                );
+
+                mqMessageService.add2Redis(message);
+            }
             Song songEntity = new Song();
             songEntity.setSongId(songId);
             songEntity.setMp3Url(StringUtils.isEmpty(map3Url) ? "-1" : map3Url);
-            songService.updateSong(songEntity);
+            list.add(songEntity);
         });
         log.info("reptile mp3url完成");
+        return list;
     }
 
     @Override
@@ -305,7 +323,7 @@ public class SongServiceImpl implements ISongService {
             String json = document.select("textarea[id=song-list-pre-data]").text();
             JSONArray jsonArray = JSON.parseArray(json);
             jsonArray.forEach(v -> {
-                // 手动提交事务，减低事务范围
+                // 手动提交事务，降低事务范围
                 TransactionStatus transactionStatus = null;
                 try {
                     transactionStatus = dataSourceTransactionManager.getTransaction(transactionDefinition);
@@ -450,7 +468,7 @@ public class SongServiceImpl implements ISongService {
             }
             count = songDao.countSearch(searchParam);
             if (count.equals(Constants.ZERO)) {
-                return new SongSearchVO(PageData.emptyPage(), artists);
+                return new SongSearchVO(PageData.emptyPage(searchParam), artists);
             }
             searchParam.setTotalItem(count);
             List<SongDto> list = songDao.listSearch(searchParam);
@@ -471,7 +489,7 @@ public class SongServiceImpl implements ISongService {
         } finally {
             if (count == 0) {
                 // 将搜索关键词push到队列
-                redisQueueService.lPush(Constants.REPTILE_SONG, searchParam.getSearchKey());
+                redisQueueService.lPush(Constants.REPTILE_SONG_KEY, searchParam.getSearchKey());
             }
         }
     }
@@ -493,22 +511,29 @@ public class SongServiceImpl implements ISongService {
     @Override
     public List<Mp3UrlVO> getMp3(List<Long> songIds) {
         List<Mp3UrlVO> list = new ArrayList<>();
-        reptileMp3Url(songIds);
-        for (Long songId : songIds) {
+        List<Song> songs = reptileMp3Url(songIds);
+        for (Song song : songs) {
+            if (StringUtils.isEmpty(song.getMp3Url()) || song.getMp3Url().equals(Constants.STR_NEGATIVE_ONE)) {
+                continue;
+            }
+            String url = String.format(Constants.WANG_YI_SONG_MP3_URL, song.getSongId());
+            list.add(new Mp3UrlVO(song.getSongId(), url));
+        }
+        /*for (Long songId : songIds) {
             String url = String.format(Constants.WANG_YI_SONG_MP3_URL, songId);
             SongDto song = this.getBySongId(songId);
             if (StringUtils.isEmpty(song.getMp3Url()) || song.getMp3Url().equals(Constants.STR_NEGATIVE_ONE)) {
                 continue;
             }
             list.add(new Mp3UrlVO(songId, url));
-        }
+        }*/
         return list;
     }
 
     @Override
     public void consumerWaitReptile() {
-        redisQueueService.bRPopLPush(Constants.REPTILE_SONG, (value) -> {
+        redisQueueService.bRPopLPush(Constants.REPTILE_SONG_KEY, (value) -> {
             songService.reptileSong(value);
-        });
+        }, Constants.TEN_THOUSAND_L);
     }
 }

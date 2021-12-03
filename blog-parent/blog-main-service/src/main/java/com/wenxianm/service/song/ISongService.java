@@ -86,7 +86,7 @@ public interface ISongService {
      * @author caiwx
      * @date 2021/10/13 - 18:05
      **/
-    void reptileMp3Url(List<Long> songIds);
+    List<Song> reptileMp3Url(List<Long> songIds);
 
     /**
      * reptile歌曲排行榜
