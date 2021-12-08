@@ -19,6 +19,7 @@ import com.wenxianm.model.vo.SongSearchVO;
 import com.wenxianm.mq.MqProducer;
 import com.wenxianm.mq.MqProducerWithoutStream;
 import com.wenxianm.service.mq.IMqMessageService;
+import com.wenxianm.service.song.ISongLyricService;
 import com.wenxianm.service.song.ISongService;
 import com.wenxianm.utils.IDUtil;
 import com.wenxianm.utils.JsonUtil;
@@ -48,6 +49,8 @@ public class SongController implements SongApi{
     MqProducerWithoutStream mqProducer;
     @Autowired
     IMqMessageService mqMessageService;
+    @Autowired
+    ISongLyricService songLyricService;
 
     @ApiMethod
     @Override
@@ -151,5 +154,10 @@ public class SongController implements SongApi{
         song.setSongId(songDto.getSongId());
         song.setMp3Url(songDto.getMp3Url());
         songService.updateSong(song);
+    }
+
+    @Override
+    public void reptileLyric() {
+        songLyricService.reptileLyric();
     }
 }

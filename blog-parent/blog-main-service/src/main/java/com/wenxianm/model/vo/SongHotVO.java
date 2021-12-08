@@ -31,6 +31,11 @@ public class SongHotVO {
      */
     private Integer playTimes;
 
+    /**
+     * cover
+     */
+    private String cover;
+
 
 
     public SongHotVO() {

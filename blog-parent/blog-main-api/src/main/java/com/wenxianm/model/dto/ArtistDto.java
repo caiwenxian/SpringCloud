@@ -34,6 +34,11 @@ public class ArtistDto implements Serializable {
      */
     private Integer reptileHotSong;
 
+    /**
+     * photo
+     */
+    private String photo;
+
     public ArtistDto() {
     }
 

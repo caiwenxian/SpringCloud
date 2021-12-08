@@ -33,6 +33,9 @@ playlist.init = function () {
         }
         // parent.window.initMusic(playlist.vm.currentPlaySongs, false);
         // parent.player.currentIndex = index;
+        // playlist.vm.currentPlaySongs = playlist.vm.songs;
+        parent.ap.init(playlist.vm.currentPlaySongs);
+        playlist.vm.cover = playlist.vm.currentSong.cover;
     }
 
 }
@@ -42,6 +45,9 @@ playlist.init = function () {
  * @param item
  */
 playlist.pushSong = function (item) {
+    if (isContainField(playlist.vm.songs, 'id', item.id)) {
+        return;
+    }
     let song = {
         name: item.name,
         author: item.artist,
@@ -70,9 +76,13 @@ playlist.pushSong = function (item) {
  * @param song
  */
 playlist.switchSong = function(song) {
+    console.log('inter switchSong')
+    playlist.vm.currentSong = song;
     playlist.vm.currentSongId = song.id;
+    playlist.vm.cover = song.cover;
     // 记录当前播放歌曲
     window.localStorage.setItem('blog.currentSongId', song.id);
+
 }
 
 
@@ -88,6 +98,7 @@ playlist.vm = new Vue({
         // 播放器的播放列表的偏移量
         currentOffset: 0,
         hasPlay: false,
+        cover: null,
 
     },
     created: function () {
@@ -103,8 +114,10 @@ playlist.vm = new Vue({
             // 记录当前播放歌曲
             window.localStorage.setItem('blog.currentSongId',song.id);
             // 调用播放器
-            parent.window.switchMusic((this.currentOffset + index) % this.songs.length + 1);
+            parent.window.ap.switch(song);
+            this.cover = song.cover;
             this.hasPlay = true;
         }
-    }
+    },
+
 });

@@ -6,6 +6,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Lists;
 import com.wenxianm.model.Page;
 import com.wenxianm.model.entity.MqMessage;
+import com.wenxianm.model.entity.SongLyric;
 import com.wenxianm.model.enums.*;
 import com.wenxianm.model.mq.Mp3UrlMessage;
 import com.wenxianm.model.param.ArtistParam;
@@ -28,6 +29,7 @@ import com.wenxianm.mq.MqProducerWithoutStream;
 import com.wenxianm.service.RedisQueueService;
 import com.wenxianm.service.mq.IMqMessageService;
 import com.wenxianm.service.song.IArtistService;
+import com.wenxianm.service.song.ISongLyricService;
 import com.wenxianm.service.song.ISongService;
 import com.wenxianm.utils.*;
 import lombok.extern.slf4j.Slf4j;
@@ -78,6 +80,8 @@ public class SongServiceImpl implements ISongService {
     private ThreadPoolExecutor threadPoolExecutor;
     @Autowired
     private RedisQueueService redisQueueService;
+    @Autowired
+    private ISongLyricService songLyricService;
 
     @Override
     public PageData<SongDto> listSong(SongParam songParam) {
@@ -107,6 +111,7 @@ public class SongServiceImpl implements ISongService {
             ArtistDto artistDto = artistMap.get(v.getArtistId());
             if (Objects.nonNull(artistDto)) {
                 v.setArtistName(artistDto.getName());
+                v.setCover(artistDto.getPhoto());
             }
         });
         return new PageData<>(list, songParam);
@@ -167,6 +172,10 @@ public class SongServiceImpl implements ISongService {
                 song.setCreateTime(new Date());
                 song.setModifyTime(new Date());
                 songDao.insertSelective(song);
+                SongLyric songLyric = new SongLyric();
+                songLyric.setVersion(Constants.ONE);
+                songLyric.setSongId(song.getSongId());
+                songLyricService.saveOne(songLyric);
             }
         } catch (Exception e) {
             log.error("新增歌曲出错: ", e);

@@ -21,6 +21,9 @@
         position: fixed;
         width: 45%;
         margin-top: 30px;
+        height: 100%;
+        overflow: auto
+
     }
     .right {
         margin-left: 60%;
@@ -77,7 +80,7 @@
         <div class="right">
             <div>
                 <div>
-                    <img src="/blog-views/static/images/music.png">
+                    <img v-bind:src="cover" style="width: 100%">
                 </div>
                 <div>
                     歌词的含义就是歌词

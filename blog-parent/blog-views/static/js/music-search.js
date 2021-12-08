@@ -2,8 +2,6 @@ var search = {};
 search.init = function () {
     search.vm.listSearchRecord();
     search.vm.listHotSong();
-    window.localStorage.setItem('blog.playlist', '');
-    window.localStorage.setItem('blog.currentSongId', '');
 };
 
 search.vm = new Vue({
@@ -106,7 +104,7 @@ search.vm = new Vue({
                     name: song.name,
                     artist: song.artistName,
                     url: mp3Urls[0].mp3Url,
-                    cover: '/blog-views/static/images/music.png',
+                    cover: isBlank(song.cover) ? '/blog-views/static/images/music.png' : song.cover + '?param=430y430',
                     id: song.songId
                 }
                 /*if (parent.player == null) {

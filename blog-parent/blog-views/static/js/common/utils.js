@@ -96,7 +96,7 @@ function isContain(list, item) {
 }
 
 function isContainField(list, field, item) {
-    for (let i = 0; i = list.length; i ++) {
+    for (let i = 0; i < list.length; i ++) {
         if (list[i][field] == item) {
             return true;
         }

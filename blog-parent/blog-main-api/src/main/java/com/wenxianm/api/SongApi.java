@@ -80,4 +80,12 @@ public interface SongApi {
     @PostMapping(value = "/updateMp3Url")
     void updateMp3Url(@RequestBody SongDto songDto);
 
+    /**
+     * reptile歌词
+     * @author caiwx
+     * @date 2021/11/20 - 16:01
+     **/
+    @GetMapping(value = "/reptileLyric")
+    void reptileLyric();
+
 }

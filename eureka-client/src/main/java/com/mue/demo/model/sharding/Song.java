@@ -22,8 +22,6 @@ public class Song extends Model<Song> implements Serializable {
 
     private String artistid;
 
-    private String lyricid;
-
     private String mp3url;
 
     private String origin;

@@ -35,12 +35,6 @@ public class Song extends BaseEntity {
     private Long artistId;
 
     /**
-     * 歌词id
-     */
-    @Column(name = "lyric_id")
-    private String lyricId;
-
-    /**
      * map3Url
      */
     @Column(name = "mp3_url")

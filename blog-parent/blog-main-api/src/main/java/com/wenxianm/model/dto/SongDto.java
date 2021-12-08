@@ -32,6 +32,11 @@ public class SongDto {
      */
     private String mp3Url;
 
+    /**
+     * cover
+     */
+    private String cover;
+
     public SongDto() {
     }
 
