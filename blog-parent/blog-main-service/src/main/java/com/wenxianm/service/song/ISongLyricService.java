@@ -1,6 +1,7 @@
 package com.wenxianm.service.song;
 
 import com.wenxianm.model.entity.SongLyric;
+import com.wenxianm.model.vo.SongLyricVO;
 
 import java.util.List;
 
@@ -53,7 +54,16 @@ public interface ISongLyricService {
      * @return SongLyric
      **/
     List<SongLyric> list(List<String> ids);
-    
+
+    /**
+     * 根据歌曲id获取歌词
+     * @param songIds 歌曲id集合
+     * @author caiwx
+     * @date 2021/12/8 - 11:37
+     * @return List<SongLyricVO>
+     **/
+    List<SongLyricVO> listBySongIds(List<Long> songIds);
+
     /**
      * reptile歌词
      * @author caiwx

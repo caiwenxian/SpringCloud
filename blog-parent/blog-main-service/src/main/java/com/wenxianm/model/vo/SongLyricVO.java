@@ -3,6 +3,8 @@ package com.wenxianm.model.vo;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
+import java.io.Serializable;
+
 /**
  * @ClassName SongLyric
  * @Author cwx
@@ -10,7 +12,12 @@ import lombok.Data;
  **/
 @Data
 @AllArgsConstructor
-public class SongLyricVO {
+public class SongLyricVO implements Serializable {
+
+    /**
+     * 歌曲id
+     */
+    private Long songId;
 
     /**
      * 歌词
@@ -22,5 +29,6 @@ public class SongLyricVO {
      */
     private Integer version;
 
-
+    public SongLyricVO() {
+    }
 }

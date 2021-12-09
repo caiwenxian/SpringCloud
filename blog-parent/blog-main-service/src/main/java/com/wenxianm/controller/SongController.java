@@ -15,6 +15,7 @@ import com.wenxianm.model.param.SongParam;
 import com.wenxianm.model.param.SongSearchParam;
 import com.wenxianm.model.vo.Mp3UrlVO;
 import com.wenxianm.model.vo.SongHotVO;
+import com.wenxianm.model.vo.SongLyricVO;
 import com.wenxianm.model.vo.SongSearchVO;
 import com.wenxianm.mq.MqProducer;
 import com.wenxianm.mq.MqProducerWithoutStream;
@@ -159,5 +160,17 @@ public class SongController implements SongApi{
     @Override
     public void reptileLyric() {
         songLyricService.reptileLyric();
+    }
+
+    /**
+     * 获取歌词
+     * @param songSearchParam#songIds 歌曲id集合
+     * @author caiwx
+     * @date 2021/12/8 - 11:34
+     * @return List<SongLyricVO>
+     **/
+    @PostMapping("/list/lyric")
+    public List<SongLyricVO> listLyric(@RequestBody SongSearchParam songSearchParam) {
+        return songLyricService.listBySongIds(songSearchParam.getSongIds());
     }
 }

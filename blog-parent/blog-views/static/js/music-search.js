@@ -112,6 +112,13 @@ search.vm = new Vue({
                 } else {
                     parent.window.addSong(obj);
                 }*/
+                search.vm.getLyric([song.songId], function (data) {
+                    if (data.length > 0) {
+                        // parent.ap.addLyric(data[0].lyric)
+                        obj.lrc = data[0].lyric == null ? '暂无歌词' : data[0].lyric;
+                    }
+                });
+
                 if (!parent.ap.isStart) {
                     parent.window.ap.init([obj]);
                 } else {
@@ -121,6 +128,7 @@ search.vm = new Vue({
                 search.vm.currentSongIndex ++;
                 // parent.window.document.getElementById("music-playlist").contentWindow.playlist.pushSong(obj);
             });
+
 
 
         },
@@ -149,7 +157,7 @@ search.vm = new Vue({
                             continue;
                         }
                         let song = result.data[i];
-                        var obj = {
+                        let obj = {
                             name: song.name,
                             author: song.artistName,
                             src: mp3Url,
@@ -169,6 +177,15 @@ search.vm = new Vue({
         },
         getMp3Url: function (songIds, callback) {
             let url = "/blog/song/get/mp3";
+            let data = {
+                songIds: songIds
+            }
+            http.post(url, JSON.stringify(data), function (result) {
+                callback(result.data);
+            }, http.CONTENT_TYPE_ONE);
+        },
+        getLyric: function (songIds, callback) {
+            let url = "/blog/song/list/lyric";
             let data = {
                 songIds: songIds
             }

@@ -7,7 +7,9 @@ import com.wenxianm.exception.BaseException;
 import com.wenxianm.model.Constants;
 import com.wenxianm.model.ServerCode;
 import com.wenxianm.model.entity.SongLyric;
+import com.wenxianm.model.vo.SongLyricVO;
 import com.wenxianm.service.song.ISongLyricService;
+import com.wenxianm.utils.BeanUtil;
 import com.wenxianm.utils.HttpClientHelper;
 import com.wenxianm.utils.IDUtil;
 import com.wenxianm.utils.PojoUtil;
@@ -90,6 +92,20 @@ public class SongLyricServiceImpl implements ISongLyricService {
     }
 
     @Override
+    public List<SongLyricVO> listBySongIds(List<Long> songIds) {
+        if (CollectionUtils.isEmpty(songIds)) {
+            return Lists.newArrayList();
+        }
+        Example example = new Example(SongLyric.class);
+        example.createCriteria().andIn(PojoUtil.field(SongLyric::getSongId), songIds);
+        List<SongLyric> songLyrics = songLyricDao.selectByExample(example);
+        if (CollectionUtils.isEmpty(songLyrics)) {
+            return Lists.newArrayList();
+        }
+        return BeanUtil.fromList(songLyrics, SongLyricVO.class);
+    }
+
+    @Override
     public void reptileLyric() {
         Example example = new Example(SongLyric.class);
         example.createCriteria().andEqualTo(PojoUtil.field(SongLyric::getHasLyric), Constants.ZERO);
@@ -126,6 +142,10 @@ public class SongLyricServiceImpl implements ISongLyricService {
             songLyric.setLyric(lyric);
             songLyric.setVersion(version);
             songLyric.setHasLyric(StringUtils.isEmpty(lyric) ? Constants.NEGATIVE_ONE : Constants.ONE);
+            if (!StringUtils.isEmpty(lyric) && lyric.length() > 15000) {
+                songLyric.setLyric(null);
+                songLyric.setHasLyric(Constants.NEGATIVE_ONE);
+            }
             list.add(songLyric);
         }
         if (!CollectionUtils.isEmpty(list)) {

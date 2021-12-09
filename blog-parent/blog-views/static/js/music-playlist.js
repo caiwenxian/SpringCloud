@@ -21,6 +21,7 @@ playlist.init = function () {
         }
         if (playlist.vm.currentSong == null) {
             playlist.vm.currentPlaySongs = playlist.vm.songs;
+            playlist.vm.currentSong =  playlist.vm.songs[0];
         } else {
             // 将数组进行位移
             for (let i = 0; i < playlist.vm.songs.length; i ++) {
@@ -30,6 +31,8 @@ playlist.init = function () {
                 playlist.vm.currentOffset = offset;
             }
             // console.log('playlist.vm.currentPlaySongs: ' + JSON.stringify(playlist.vm.currentPlaySongs))
+            let currentIndex = indexOfField(playlist.vm.songs, 'id', playlist.vm.currentSongId);
+            playlist.vm.currentSong =  playlist.vm.songs[currentIndex];
         }
         // parent.window.initMusic(playlist.vm.currentPlaySongs, false);
         // parent.player.currentIndex = index;
@@ -53,7 +56,8 @@ playlist.pushSong = function (item) {
         author: item.artist,
         url: item.url,
         id: item.id,
-        cover: item.cover
+        cover: item.cover,
+        lrc: item.lrc
     }
     let index = playlist.vm.songs.length - playlist.vm.currentOffset + 1;
     playlist.vm.songs.splice(index, 0, song);
@@ -82,7 +86,40 @@ playlist.switchSong = function(song) {
     playlist.vm.cover = song.cover;
     // 记录当前播放歌曲
     window.localStorage.setItem('blog.currentSongId', song.id);
+    // 切换歌词
+    playlist.vm.lyric.lineNo = 1;
+    $('#lyric').animate({
+        scrollTop: 0
+    });
+    let lyrics = playlist.vm.currentSong.lrc.replaceAll("\"", "").split("\n");
+    for (let i in lyrics) {
+        let t = lyrics[i].substring(lyrics[i].indexOf("[") + 1, lyrics[i].indexOf("]"));
+        playlist.vm.lyric.lyricArray.push({
+            t: (t.split(":")[0] * 60 + parseFloat(t.split(":")[1])).toFixed(3),
+            c: lyrics[i].substring(lyrics[i].indexOf("]") + 1, lyrics[i].length)
+        })
+    }
+}
 
+/**
+ * 展示歌词
+ * @param song
+ * @param audio
+ */
+playlist.showLyric = function(song, audio) {
+    let lineNo = playlist.vm.lyric.lineNo;
+    let lyricArray = playlist.vm.lyric.lyricArray;
+    if (isBlank(song.lrc)) {
+        return;
+    }
+    if (!isBlank(lyricArray[lineNo]) && lineNo == lyricArray.length - 1 && audio.currentTime.toFixed(3) >= parseFloat(lyricArray[lineNo].t)) {
+        lineHeight(lineNo);
+    }
+    if (!isBlank(lyricArray[lineNo + 1]) && parseFloat(lyricArray[lineNo].t) <= audio.currentTime.toFixed(3) &&
+        audio.currentTime.toFixed(3) <= parseFloat(lyricArray[lineNo + 1].t)) {
+        lineHeight(lineNo);
+        playlist.vm.lyric.lineNo ++;
+    }
 }
 
 
@@ -99,6 +136,10 @@ playlist.vm = new Vue({
         currentOffset: 0,
         hasPlay: false,
         cover: null,
+        lyric: {
+            lineNo: 1,
+            lyricArray: [],
+        }
 
     },
     created: function () {
@@ -119,5 +160,60 @@ playlist.vm = new Vue({
             this.hasPlay = true;
         }
     },
+    computed: {
+        lyrics: function () {
+            if (this.currentSong != null) {
+                let arr = this.currentSong.lrc.replaceAll("\"", "").split("\n");
+                let lyricsArr = [];
+                for (let i in arr) {
+                    lyricsArr.push(arr[i].substring(arr[i].indexOf("]") + 1, arr[i].length))
+                }
+                return lyricsArr;
+            }
+            return [];
+        }
+    }
 
 });
+
+
+
+
+let fraction = 0.5;
+let topNum = 0;
+function lineHeight(lineno){
+    var ul = $(".aplayer-lrc-contents");
+    var $ul = document.getElementById('lyric');
+    // 令正在唱的那一行高亮显示
+    if (lineno > 0) {
+        $(ul.find("li").get(topNum + lineno - 1)).removeClass("line-height");
+    }
+    var nowline = ul.find("li").get(topNum + lineno);
+    $(nowline).addClass("line-height");
+
+    // 实现文字滚动
+    var _scrollTop;
+    // $ul.scrollTop = 0;
+    if ($ul.clientHeight * fraction > nowline.offsetTop) {
+        _scrollTop = 0;
+    } else if (nowline.offsetTop > ($ul.scrollHeight - $ul.clientHeight * (1 - fraction))) {
+        _scrollTop = $ul.scrollHeight - $ul.clientHeight;
+    } else {
+        _scrollTop = nowline.offsetTop - $ul.clientHeight * fraction;
+    }
+
+    //以下声明歌词高亮行固定的基准线位置成为 “A”
+    let top = 0;
+    if ((nowline.offsetTop - $ul.scrollTop) >= $ul.clientHeight * fraction) {
+        top = $ul.scrollTop + Math.ceil(nowline.offsetTop - $ul.scrollTop - $ul.clientHeight * fraction);
+    } else if ((nowline.offsetTop - $ul.scrollTop) < $ul.clientHeight * fraction && _scrollTop != 0) {
+        top = $ul.scrollTop - Math.ceil($ul.clientHeight * fraction - (nowline.offsetTop - $ul.scrollTop));
+    } else if (_scrollTop == 0) {
+        top = 0;
+    } else {
+        top = $(ul.find('li').get(0)).height();
+    }
+    ul.animate({
+        scrollTop: top
+    });
+}
