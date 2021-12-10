@@ -99,6 +99,7 @@ playlist.switchSong = function(song) {
             c: lyrics[i].substring(lyrics[i].indexOf("]") + 1, lyrics[i].length)
         })
     }
+    console.log("playlist.vm.lyric.lyricArray: ", playlist.vm.lyric.lyricArray)
 }
 
 /**
@@ -120,6 +121,8 @@ playlist.showLyric = function(song, audio) {
         lineHeight(lineNo);
         playlist.vm.lyric.lineNo ++;
     }
+    let audioTime = audio.currentTime.toFixed(3);
+    let lrcTime = parseFloat(lyricArray[lineNo].t);
 }
 
 
