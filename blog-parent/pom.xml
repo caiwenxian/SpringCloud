@@ -34,6 +34,7 @@
         <module>blog-quartz-service</module>
         <module>blog-gateway</module>
         <module>blog-queue-service</module>
+        <module>all-try</module>
     </modules>
 
     <dependencies>
